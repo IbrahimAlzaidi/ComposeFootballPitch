@@ -31,7 +31,7 @@ kotlin {
             dependencies {
                 implementation(compose.runtime)
                 implementation(compose.foundation)
-                implementation(compose.material)
+                implementation(compose.material3)
             }
         }
         val androidMain by getting {
@@ -75,17 +75,18 @@ android {
 }
 
 mavenPublishing {
-//    publishToMavenCentral(SonatypeHost.DEFAULT)
-    // or when publishing to https://s01.oss.sonatype.org
+    // Configure publishing to Maven Central (you can disable this until you are ready).
+    // publishToMavenCentral(SonatypeHost.DEFAULT)
     publishToMavenCentral(SonatypeHost.S01, automaticRelease = true)
     signAllPublications()
-    coordinates("com.example.mylibrary", "mylibrary-runtime", "1.0.0")
+    // Coordinates used when this library is published to a Maven repository.
+    coordinates("io.github.ibrahimalzaidi", "compose-football-pitch", "0.1.0")
 
     pom {
         name.set(project.name)
-        description.set("A description of what my library does.")
-        inceptionYear.set("2023")
-        url.set("https://github.com/username/mylibrary/")
+        description.set("A Compose Multiplatform library for rendering customizable football pitches and team lineups.")
+        inceptionYear.set("2025")
+        url.set("https://github.com/IbrahimAlzaidi/ComposeFootballPitch")
         licenses {
             license {
                 name.set("The Apache License, Version 2.0")
@@ -95,15 +96,15 @@ mavenPublishing {
         }
         developers {
             developer {
-                id.set("username")
-                name.set("User Name")
-                url.set("https://github.com/username/")
+                id.set("ibrahimalzaidi")
+                name.set("Ibrahim Alzaidi")
+                url.set("https://github.com/IbrahimAlzaidi/")
             }
         }
         scm {
-            url.set("https://github.com/username/mylibrary/")
-            connection.set("scm:git:git://github.com/username/mylibrary.git")
-            developerConnection.set("scm:git:ssh://git@github.com/username/mylibrary.git")
+            url.set("https://github.com/IbrahimAlzaidi/ComposeFootballPitch")
+            connection.set("scm:git:git://github.com/IbrahimAlzaidi/ComposeFootballPitch.git")
+            developerConnection.set("scm:git:ssh://git@github.com/IbrahimAlzaidi/ComposeFootballPitch.git")
         }
     }
 }

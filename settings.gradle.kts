@@ -1,7 +1,7 @@
 rootProject.name = "compose-multiplatform-library-template"
 
 include(":sample:androidApp")
-include(":lib")
+include(":ComposeFootballPitch")
 include(":sample:desktopApp")
 include(":sample:shared")
 
