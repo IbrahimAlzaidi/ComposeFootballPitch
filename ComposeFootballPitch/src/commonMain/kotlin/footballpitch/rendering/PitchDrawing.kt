@@ -8,8 +8,6 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import footballpitch.PitchScaleCalculator
 import footballpitch.model.GradientDirection
 import footballpitch.model.PitchBackground
-import footballpitch.model.PitchOrientation
-import footballpitch.model.PitchPosition
 import footballpitch.model.PitchStyle
 import footballpitch.model.StripeOrientation
 
