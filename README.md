@@ -1,435 +1,349 @@
-[![official project](http://jb.gg/badges/official.svg)](https://confluence.jetbrains.com/display/ALL/JetBrains+on+GitHub)
-[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Build Multiplatform project](https://github.com/KevinnZou/compose-multiplatform-library-template/actions/workflows/build.yml/badge.svg)](https://github.com/KevinnZou/compose-multiplatform-library-template/actions/workflows/build.yml)
-[![Publish Wiki](https://github.com/KevinnZou/compose-multiplatform-library-template/actions/workflows/wiki.yml/badge.svg)](https://github.com/KevinnZou/compose-multiplatform-library-template/actions/workflows/wiki.yml)
-# [Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform) Library
+# Compose Football Pitch (Compose Multiplatform)
 
-This is a template for a [Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform#readme) **library** targeting desktop,
-Android, and iOS. It is built on top of the [Compose Multiplatform Template](https://github.com/JetBrains/compose-multiplatform-template)
-and contains the following changes:
-* Add a `lib` module for the shared library code.
-* Move the androidApp, desktopApp, and iosApp modules to the `samples` folder.
-* Apply the `org.jetbrains.dokka` plugin to generate documentation for the library code.
-* Apply the `com.vanniktech.maven.publish` plugin to streamline the process of publishing a library.
-* Apply the `org.jlleitschuh.gradle.ktlint` plugin to enforce the code style and set up the git hooks to fix the code style before committing automatically.
-* Set up the CI pipeline to build the project, check the code style, and publish the documentation.
+Compose Football Pitch is a **Compose Multiplatform** library for rendering customizable football (soccer) pitches and team lineups across Android, desktop, and iOS.
 
-## Maven Publish
-This template applies the `com.vanniktech.maven.publish` plugin to streamline the process of publishing a library.
+It focuses on:
 
-### Configuring
-To publish your library properly, you need to configure the necessary information in `mavenPublishing` block in `build.gradle.kts`
+- Accurate pitch lines based on real dimensions.
+- Flexible pitch orientation and backgrounds.
+- Configurable line thickness and colours.
+- Simple but extensible player/kit rendering.
+- Formation-aware lineups (4‑4‑2, 4‑3‑3, 3‑5‑2, etc.).
+
+---
+
+## Modules
+
+The library is published as a Kotlin Multiplatform module:
+
+- Module: `ComposeFootballPitch`
+- Suggested Maven coordinates:
+  - Group: `io.github.ibrahimalzaidi`
+  - Artifact: `compose-football-pitch`
+  - Version: `0.1.0`
+
+> Note: Before publishing to Maven Central, ensure you control the `io.github.ibrahimalzaidi` group on Sonatype and adjust coordinates if needed.
+
+---
+
+## Installation
+
+Once you publish the artifact (to Maven Central or your internal repository), add the dependency to your shared Gradle module:
+
 ```kotlin
-mavenPublishing {
-    // publishToMavenCentral(SonatypeHost.DEFAULT)
-    // or when publishing to https://s01.oss.sonatype.org
-    publishToMavenCentral(SonatypeHost.S01, automaticRelease = true)
-    signAllPublications()
-    coordinates("com.example.mylibrary", "mylibrary-runtime", "1.0.0")
-
-    pom {
-        name.set(project.name)
-        description.set("A description of what my library does.")
-        inceptionYear.set("2023")
-        url.set("https://github.com/username/mylibrary/")
-        licenses {
-            license {
-                name.set("The Apache License, Version 2.0")
-                url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-                distribution.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-            }
-        }
-        developers {
-            developer {
-                id.set("username")
-                name.set("User Name")
-                url.set("https://github.com/username/")
-            }
-        }
-        scm {
-            url.set("https://github.com/username/mylibrary/")
-            connection.set("scm:git:git://github.com/username/mylibrary.git")
-            developerConnection.set("scm:git:ssh://git@github.com/username/mylibrary.git")
-        }
-    }
+dependencies {
+    implementation("io.github.ibrahimalzaidi:compose-football-pitch:0.1.0")
 }
 ```
 
-### Secrets
-For the publishing to work the credentials for Sonatype OSS as well as for the GPG key that is used for signing need to provided. To keep them out of version control it is recommended to either put this into the gradle.properties file user home or to use environment variables for publishing from CI servers.
+For now, if you are using this project as a template, you can depend on the `ComposeFootballPitch` module directly from your app module:
+
 ```kotlin
-mavenCentralUsername=username
-mavenCentralPassword=the_password
-
-signing.keyId=12345678
-signing.password=some_password
-signing.secretKeyRingFile=/Users/yourusername/.gnupg/secring.gpg
+dependencies {
+    implementation(project(":ComposeFootballPitch"))
+}
 ```
 
-Please visit https://vanniktech.github.io/gradle-maven-publish-plugin/central/#configuring-maven-central for detailed instructions.
+---
 
-## KtLint
+## Quick Start
 
-This template applies the `org.jlleitschuh.gradle.ktlint` plugin to enforce the code style. 
-To check the code style, run the following command:
-```shell
-./gradlew ktlintCheck
-```
-To automatically fix the code style, run the following command:
-```shell
-./gradlew ktlintFormat
-```
+The main entry point is the `FootballPitch` composable:
 
-This template also setup the git hooks to fix the code style before committing automatically.
-To install the git hooks, run the following command:
-```shell
-./gradlew setUpGitHooks
-```
-Then you can commit the code without worrying about the code style.
-
-## Dokka
-
-This template applies the `org.jetbrains.dokka` plugin to generate documentation for the library code.
-To generate the documentation, run the following command:
-```shell
-./gradlew dokkaHtmlMultiModule
-```
-The documentation will be generated in the `build/dokka/htmlMultiModule` folder.
-
-## CI/CD
-This template uses GitHub Actions to set up a CI/CD pipeline. 
-Currently, the pipeline is configured to do three things:
-
-### Build the project
-The pipeline is triggered on every push to the `main` branch or on every pull request.
-It builds the project and runs the tests.
-
-The pipeline is defined in [`.github/workflows/build.yml`](https://github.com/KevinnZou/compose-multiplatform-library-template/blob/feature/ci_support/.github/workflows/build.yml).
-
-### Check the code style
-The pipeline is triggered on every push to the `main` branch or on every pull request.
-It checks the code style and fails if the code style is not correct.
-
-The pipeline is defined in [`.github/workflows/code_style.yml`](https://github.com/KevinnZou/compose-multiplatform-library-template/blob/feature/ci_support/.github/workflows/code_style.yml).
-
-If the code style is not correct, you can run the following command to fix it:
-```shell
-./gradlew ktlintFormat
+```kotlin
+FootballPitch(
+    teamA = homeTeam,
+    teamB = awayTeam
+)
 ```
 
-### Publish the documentation
-The pipeline is triggered on every push to the `main` branch or on every pull request.
-It generates the documentation and publishes it to GitHub Pages.
-
-The pipeline is defined in [`.github/workflows/wiki.yml`](https://github.com/KevinnZou/compose-multiplatform-library-template/blob/feature/ci_support/.github/workflows/wiki.yml).
-
-## Set up the environment
-
-> **Note**
-> The iOS part of Compose Multiplatform is in Alpha. It may change incompatibly and require manual migration in the
-> future.
-> If you have any issues, please report them on [GitHub](https://github.com/JetBrains/compose-multiplatform/issues).
-
-You can use this template to start developing your
-own [Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform#readme) library targeting desktop,
-Android, and iOS.
-Follow our tutorial below to get your first Compose Multiplatform app up and running.
-The result will be a [Kotlin Multiplatform](https://kotlinlang.org/docs/multiplatform.html) project that uses the
-Compose Multiplatform UI framework.
-
-<img src="readme_images/banner.png" height="350">
-
-
-> **Warning**
-> You need a Mac with macOS to write and run iOS-specific code on simulated or real devices.
-> This is an Apple requirement.
-
-To work with this template, you need the following:
-
-* A machine running a recent version of macOS
-* [Xcode](https://apps.apple.com/us/app/xcode/id497799835)
-* [Android Studio](https://developer.android.com/studio)
-* The [Kotlin Multiplatform Mobile plugin](https://plugins.jetbrains.com/plugin/14936-kotlin-multiplatform-mobile)
-
-### Check your environment
-
-Before you start, use the [KDoctor](https://github.com/Kotlin/kdoctor) tool to ensure that your development environment
-is configured correctly:
-
-1. Install KDoctor with [Homebrew](https://brew.sh/):
-
-    ```text
-    brew install kdoctor
-    ```
-
-2. Run KDoctor in your terminal:
-
-    ```text
-    kdoctor
-    ```
-
-   If everything is set up correctly, you'll see valid output:
-
-   ```text
-   Environment diagnose (to see all details, use -v option):
-   [✓] Operation System
-   [✓] Java
-   [✓] Android Studio
-   [✓] Xcode
-   [✓] Cocoapods
-   
-   Conclusion:
-     ✓ Your system is ready for Kotlin Multiplatform Mobile development!
-   ```
-
-Otherwise, KDoctor will highlight which parts of your setup still need to be configured and will suggest a way to fix
-them.
-
-## Examine the project structure
-
-Open the project in Android Studio and switch the view from **Android** to **Project** to see all the files and targets
-belonging to the project:
-
-<img src="readme_images/open_project_view.png" height="300px">
-
-Your Compose Multiplatform project includes 4 modules:
-
-### `shared`
-
-This is a Kotlin module that contains the logic common for desktop, Android, and iOS applications, that is, the code you
-share between platforms.
-
-This `shared` module is also where you'll write your Compose Multiplatform code.
-In `shared/src/commonMain/kotlin/App.kt`, you can find the shared root `@Composable` function for your app.
-
-It uses Gradle as the build system. You can add dependencies and change settings in `shared/build.gradle.kts`.
-The `shared` module builds into a Java library, an Android library, and an iOS framework.
-
-### `desktopApp`
-
-This is a Kotlin module that builds into a desktop application. It uses Gradle as the build system. The `desktopApp`
-module depends on and uses the `shared` module as a regular library.
-
-### `androidApp`
-
-This is a Kotlin module that builds into an Android application. It uses Gradle as the build system.
-The `androidApp` module depends on and uses the `shared` module as a regular Android library.
-
-### `iosApp`
-
-This is an Xcode project that builds into an iOS application.
-It depends on and uses the `shared` module as a CocoaPods dependency.
-
-## Run your application
-
-### On desktop
-
-To run your desktop application in Android Studio, select `desktopApp` in the list of run configurations and click **Run**:
-
-<img src="readme_images/run_on_desktop.png" height="60px"><br />
-
-<img src="readme_images/desktop_app_running.png" height="300px">
-
-You can also run Gradle tasks in the terminal:
-
-* `./gradlew run` to run application
-* `./gradlew package` to store native distribution into `build/compose/binaries`
-
-### On Android
-
-To run your application on an Android emulator:
-
-1. Ensure you have an Android virtual device available.
-   Otherwise, [create one](https://developer.android.com/studio/run/managing-avds#createavd).
-2. In the list of run configurations, select `androidApp`.
-3. Choose your virtual device and click **Run**:
-
-    <img src="readme_images/run_on_android.png" height="60px"><br />      
-
-    <img src="readme_images/android_app_running.png" height="300px">
-
-<details>
-  <summary>Alternatively, use Gradle</summary>
-
-To install an Android application on a real Android device or an emulator, run `./gradlew installDebug` in the terminal.
-
-</details>
-
-### On iOS
-
-#### Running on a simulator
-
-To run your application on an iOS simulator in Android Studio, modify the `iosApp` run configuration:
-
-1. In the list of run configurations, select **Edit Configurations**:
-
-   <img src="readme_images/edit_run_config.png" height="200px">
-
-2. Navigate to **iOS Application** | **iosApp**.
-3. In the **Execution target** list, select your target device. Click **OK**:
-
-   <img src="readme_images/target_device.png" height="400px">
-
-4. The `iosApp` run configuration is now available. Click **Run** next to your virtual device:
-
-   <img src="readme_images/ios_app_running.png" height="300px">
-
-#### Running on a real iOS device
-
-You can run your Compose Multiplatform application on a real iOS device for free.
-To do so, you'll need the following:
-
-* The `TEAM_ID` associated with your [Apple ID](https://support.apple.com/en-us/HT204316)
-* The iOS device registered in Xcode
-
-> **Note**
-> Before you continue, we suggest creating a simple "Hello, world!" project in Xcode to ensure you can successfully run
-> apps on your device.
-> You can follow the instructions below or watch
-> this [Stanford CS193P lecture recording](https://youtu.be/bqu6BquVi2M?start=716&end=1399).
-
-<details>
-<summary>How to create and run a simple project in Xcode</summary>
-
-1. On the Xcode welcome screen, select **Create a new project in Xcode**.
-2. On the **iOS** tab, choose the **App** template. Click **Next**.
-3. Specify the product name and keep other settings default. Click **Next**.
-4. Select where to store the project on your computer and click **Create**. You'll see an app that displays "Hello,
-   world!" on the device screen.
-5. At the top of your Xcode screen, click on the device name near the **Run** button.
-6. Plug your device into the computer. You'll see this device in the list of run options.
-7. Choose your device and click **Run**.
-
-</details>
-
-##### Finding your Team ID
-
-In the terminal, run `kdoctor --team-ids` to find your Team ID.
-KDoctor will list all Team IDs currently configured on your system, for example:
-
-```text
-3ABC246XYZ (Max Sample)
-ZABCW6SXYZ (SampleTech Inc.)
+Where `homeTeam` and `awayTeam` are instances of `TeamLineup`.
+
+To make this easier, the library provides higher‑level models to describe teams, kit styles, and formations.
+
+### Basic example with `TeamSetup` and `MatchTeams`
+
+```kotlin
+'import footballpitch.FootballPitch
+'import footballpitch.model.*
+'import androidx.compose.ui.graphics.Color
+
+@Composable
+fun MatchScreen() {
+    val matchTeams = MatchTeams(
+        home = TeamSetup(
+            name = "Home",
+            colorArgb = 0xFF1E88E5,          // blue
+            goalkeeperColorArgb = 0xFFFFC107,
+            formation = Formations.fourFourTwo(),
+            kitStyle = TeamKitStyle(
+                fieldPlayerShirtStyle = ShirtStyle.STRIPED,
+                goalkeeperShirtStyle = ShirtStyle.GOALKEEPER
+            ),
+            attackDirection = AttackDirection.LeftToRight
+        ),
+        away = TeamSetup(
+            name = "Away",
+            colorArgb = 0xFFEF5350,          // red
+            goalkeeperColorArgb = 0xFF8D6E63,
+            formation = Formations.threeFourThree(),
+            kitStyle = TeamKitStyle(
+                fieldPlayerShirtStyle = ShirtStyle.COLLAR,
+                goalkeeperShirtStyle = ShirtStyle.GOALKEEPER
+            ),
+            attackDirection = AttackDirection.RightToLeft
+        )
+    )
+
+    val (homeLineup, awayLineup) = matchTeams.toLineups()
+
+    FootballPitch(
+        style = PitchStyle(
+            background = PitchBackground.Gradient(
+                colors = listOf(Color(0xFF166C31), Color(0xFF0E5A26)),
+            )
+        ),
+        teamA = homeLineup,
+        teamB = awayLineup
+    )
+}
 ```
 
-<details>
-<summary>Alternative way to find your Team ID</summary>
+This gives you:
 
-If KDoctor doesn't work for you, try this alternative method:
+- Non‑overlapping home/away teams (mirrored with `AttackDirection`).
+- A configurable formation for each team.
+- Different shirt styles per team via `TeamKitStyle`.
 
-1. In Android Studio, run the `iosApp` configuration with the selected real device. The build should fail.
-2. Go to Xcode and select **Open a project or file**.
-3. Navigate to the `iosApp/iosApp.xcworkspace` file of your project.
-4. In the left-hand menu, select `iosApp`.
-5. Navigate to **Signing & Capabilities**.
-6. In the **Team** list, select your team.
+---
 
-If you haven't set up your team yet, use the **Add account** option and follow the steps.
+## Core Concepts
 
-</details>
+### Pitch configuration
 
-To run the application, set the `TEAM_ID`:
+**Dimensions**
 
-1. In the template, navigate to the `iosApp/Configuration/Config.xcconfig` file.
-2. Set your `TEAM_ID`.
-3. Re-open the project in Android Studio. It should show the registered iOS device in the `iosApp` run configuration.
+`PitchDimensions` describes the pitch in real‑world meters:
 
-## Make your first changes
+```kotlin
+val customDimensions = PitchDimensions(
+    length = 105f,
+    width = 68f,
+    penaltyAreaDepth = 16.5f,
+    penaltyAreaWidth = 40.32f,
+    goalAreaDepth = 5.5f,
+    goalAreaWidth = 18.32f,
+    penaltyMarkDistance = 11f,
+    circleRadius = 9.15f,
+    cornerArcRadius = 1f
+)
+```
 
-You can now make some changes in the code and check that they are visible in both the iOS and Android applications at
-the same time:
+`FootballPitch` uses FIFA‑style defaults, but you can override them via the `dimensions` parameter.
 
-1. In Android Studio, navigate to the `shared/src/commonMain/kotlin/App.kt` file.
-   This is the common entry point for your Compose Multiplatform app.
+**Orientation**
 
-   Here, you see the code responsible for rendering the "Hello, World!" button and the animated Compose Multiplatform logo:
-   
-   ```kotlin
-   @OptIn(ExperimentalResourceApi::class)
-   @Composable
-   internal fun App() {
-       MaterialTheme {
-           var greetingText by remember { mutableStateOf("Hello, World!") }
-           var showImage by remember { mutableStateOf(false) }
-           Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-               Button(onClick = {
-                   greetingText = "Hello, ${getPlatformName()}"
-                   showImage = !showImage
-               }) {
-                   Text(greetingText)
-               }
-               AnimatedVisibility(showImage) {
-                   Image(
-                       painterResource("compose-multiplatform.xml"),
-                       null
-                   )
-               }
-           }
-       }
-   }
-   ```
+`PitchOrientation` controls where the goals are placed:
 
-2. Update the shared code by adding a text field that will update the name displayed on the button:
+```kotlin
+FootballPitch(
+    orientation = PitchOrientation.Vertical, // goals at top/bottom
+    // ...
+)
+```
 
-   ```diff
-   @OptIn(ExperimentalResourceApi::class)
-   @Composable
-   internal fun App() {
-       MaterialTheme {
-           var greetingText by remember { mutableStateOf("Hello, World!") }
-           var showImage by remember { mutableStateOf(false) }
-           Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-               Button(onClick = {
-                   greetingText = "Hello, ${getPlatformName()}"
-                   showImage = !showImage
-               }) {
-                   Text(greetingText)
-               }
-   +           TextField(greetingText, onValueChange = { greetingText = it })
-               AnimatedVisibility(showImage) {
-                   Image(
-                       painterResource("compose-multiplatform.xml"),
-                       null
-                   )
-               }
-           }
-       }
-   }
-   ```
+Supported values:
 
-3. Re-run the `desktopApp`, `androidApp`, and `iosApp` configurations. You'll see this change reflected in all three
-   apps:
+- `Horizontal`, `HorizontalReversed`
+- `Vertical`, `VerticalReversed`
 
-   <img src="readme_images/text_field_added.png" height="350px">
+### Pitch style & background
 
-## How to configure the iOS application
+`PitchStyle` configures how the pitch looks:
 
-To get a better understanding of this template's setup and learn how to configure the basic properties of your iOS app without Xcode,
-open the `iosApp/Configuration/Config.xcconfig` file in Android Studio. The configuration file contains:
+```kotlin
+val style = PitchStyle(
+    background = PitchBackground.Stripes(
+        colors = listOf(Color(0xFF166C31), Color(0xFF0E5A26)),
+        stripeCount = 10,
+        orientation = StripeOrientation.Vertical
+    ),
+    lineColor = Color.White,
+    lineThicknessFactor = 1.2f
+)
+```
 
-* `APP_NAME`, a target executable and an application bundle name.
-* `BUNDLE_ID`,
-  which [uniquely identifies the app throughout the system](https://developer.apple.com/documentation/bundleresources/information_property_list/cfbundleidentifier#discussion).
-* `TEAM_ID`, [a unique identifier generated by Apple that's assigned to your team](https://developer.apple.com/help/account/manage-your-team/locate-your-team-id/#:~:text=A%20Team%20ID%20is%20a,developer%20in%20App%20Store%20Connect).
+Available backgrounds:
 
-To configure the `APP_NAME` option, open `Config.xcconfig` in any text editor *before opening* the project in Android
-Studio, and then set the desired name.
+- `PitchBackground.Solid` – single grass colour.
+- `PitchBackground.Stripes` – alternating stripes (vertical/horizontal).
+- `PitchBackground.Checkerboard` – grid pattern.
+- `PitchBackground.Gradient` – linear gradient (vertical/horizontal/diagonal).
 
-If you need to change this option after you open the project in Android Studio, do the following:
+`lineThicknessFactor` scales the default line width (based on real dimensions) up or down.
 
-1. Close the project in Android Studio.
-2. Run `./cleanup.sh` in your terminal.
-3. Change the setting.
-4. Open the project in Android Studio again.
+---
 
-To configure advanced settings, use Xcode. After opening the project in Android Studio,
-open the `iosApp/iosApp.xcworkspace` file in Xcode and make changes there.
+## Teams, kits, and formations
 
-## Next steps
+### Positions and players
 
-We encourage you to explore Compose Multiplatform further and try out more projects:
+`PitchPosition` uses normalized coordinates:
 
-* [Create an application targeting iOS and Android with Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform-ios-android-template#readme)
-* [Create an application targeting Windows, macOS, and Linux with Compose Multiplatform for Desktop](https://github.com/JetBrains/compose-multiplatform-desktop-template#readme)
-* [Complete more Compose Multiplatform tutorials](https://github.com/JetBrains/compose-multiplatform/blob/master/tutorials/README.md)
-* [Explore some more advanced Compose Multiplatform example projects](https://github.com/JetBrains/compose-multiplatform/blob/master/examples/README.md)
+- `x` and `y` in `[0f, 1f]`
+- `(0f, 0f)` is bottom‑left, `(1f, 1f)` is top‑right in the default orientation.
+
+```kotlin
+val player = Player(
+    position = PitchPosition(x = 0.7f, y = 0.4f),
+    number = 9,
+    isGoalkeeper = false
+)
+```
+
+`TeamLineup` is the structure passed to `FootballPitch`:
+
+```kotlin
+val team = TeamLineup(
+    teamName = "Home",
+    colorArgb = 0xFF1E88E5,
+    goalkeeperColorArgb = 0xFFFFC107,
+    players = listOf(player),
+    kitStyle = TeamKitStyle(
+        fieldPlayerShirtStyle = ShirtStyle.CLASSIC,
+        goalkeeperShirtStyle = ShirtStyle.GOALKEEPER
+    )
+)
+```
+
+### Shirt styles and kits
+
+`ShirtStyle` controls how player icons are drawn:
+
+- `CLASSIC` – V‑neck shirt with sleeves.
+- `GOALKEEPER` – keeper variant (ready for future customization).
+- `CIRCLE` – simple circular marker (good for tactical views).
+- `STRIPED` – classic shirt with simple vertical stripes.
+- `COLLAR` – classic shirt with a highlighted collar.
+
+`TeamKitStyle` selects the default style per role:
+
+```kotlin
+val kit = TeamKitStyle(
+    fieldPlayerShirtStyle = ShirtStyle.STRIPED,
+    goalkeeperShirtStyle = ShirtStyle.GOALKEEPER
+)
+```
+
+The renderer automatically applies these to each player based on `isGoalkeeper`.
+
+### Formations
+
+Formations are modeled as a simple three‑line system:
+
+```kotlin
+data class Formation(
+    val defenders: Int,
+    val midfielders: Int,
+    val forwards: Int
+)
+```
+
+Predefined formations (via `Formations`):
+
+- `Formations.fourFourTwo()` – 4‑4‑2
+- `Formations.fourThreeThree()` – 4‑3‑3
+- `Formations.fourFiveOne()` – 4‑5‑1
+- `Formations.fiveThreeTwo()` – 5‑3‑2
+- `Formations.fiveFourOne()` – 5‑4‑1
+- `Formations.threeFourThree()` – 3‑4‑3
+- `Formations.threeFiveTwo()` – 3‑5‑2
+- `Formations.fourTwoFour()` – 4‑2‑4
+- `Formations.threeSixOne()` – 3‑6‑1
+- `Formations.twoThreeFive()` – 2‑3‑5
+
+Player positions are generated as:
+
+- Goalkeeper near own goal.
+- Defenders closer to own box.
+- Midfield line around the centre.
+- Forwards near the opponent’s box.
+
+### Attack direction (home vs away)
+
+`AttackDirection` ensures home and away teams do not overlap:
+
+```kotlin
+enum class AttackDirection {
+    LeftToRight,
+    RightToLeft
+}
+```
+
+It is used by formation helpers and by `TeamSetup`:
+
+```kotlin
+val home = TeamSetup(
+    // ...
+    formation = Formations.fourFourTwo(),
+    attackDirection = AttackDirection.LeftToRight
+)
+
+val away = TeamSetup(
+    // ...
+    formation = Formations.fourThreeThree(),
+    attackDirection = AttackDirection.RightToLeft
+)
+```
+
+Internally, the X coordinates are mirrored when `RightToLeft` is selected, so both teams always have a goalkeeper at their own end and matching formations do not overlap.
+
+---
+
+## Architecture overview
+
+- **Public API (`footballpitch` and `footballpitch.model`)**
+  - `FootballPitch` composable.
+  - Data models: `PitchDimensions`, `PitchOrientation`, `PitchStyle`, `PitchBackground`, `PitchPosition`, `Formation`, `TeamLineup`, `Player`, `TeamSetup`, `MatchTeams`, `TeamKitStyle`, `PlayerAppearance`, `ShirtStyle`, `AttackDirection`.
+- **Rendering internals (`footballpitch.rendering`)**
+  - Pitch drawing functions (lines, background, circles, boxes).
+  - Player rendering (shirts, stripes, collars, markers, numbers).
+  - These are kept internal to keep the public API stable and easy to reason about.
+
+This separation makes it easier to extend the visuals without breaking consumers.
+
+---
+
+## Publishing notes
+
+The Gradle configuration for `ComposeFootballPitch` already includes a basic Maven publishing setup using `com.vanniktech.maven.publish`. Important fields:
+
+- Group ID: `io.github.ibrahimalzaidi`
+- Artifact ID: `compose-football-pitch`
+- Version: `0.1.0`
+- POM metadata:
+  - URL / SCM / developer info pointing to `https://github.com/IbrahimAlzaidi/ComposeFootballPitch`
+
+Before publishing:
+
+1. Make sure you have a Sonatype account and have requested access to the `io.github.ibrahimalzaidi` group.
+2. Update coordinates if you decide on a different group or artifact ID.
+3. Verify the license and POM fields match your repository setup.
+
+---
+
+## Roadmap ideas
+
+- Text rendering for player numbers and names.
+- Bench / substitutes visualisation.
+- More advanced pitch themes (TV broadcast, training mode, dark mode).
+- Animation utilities (player movement, ball path).
+
+---
+
+## License
+
+This project is based on the [compose-multiplatform-library-template](https://github.com/KevinnZou/compose-multiplatform-library-template).
+
+See `LICENSE.txt` in this repository for license details.
+
