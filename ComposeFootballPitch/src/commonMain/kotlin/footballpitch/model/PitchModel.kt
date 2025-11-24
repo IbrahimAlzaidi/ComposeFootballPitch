@@ -42,5 +42,5 @@ data class Player(
     /** Optional squad number to render on the shirt. */
     val number: Int? = null,
     /** Whether this player should be treated as a goalkeeper. */
-    val isGoalkeeper: Boolean = false
+    val isGoalkeeper: Boolean = false,
 )

@@ -3,9 +3,7 @@ package com.myapplication
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.ui.graphics.Color
 import footballpitch.FootballPitch
-import footballpitch.model.AttackDirection
 import footballpitch.model.Formations
 import footballpitch.model.MatchTeams
 import footballpitch.model.PitchBackground
@@ -39,8 +37,7 @@ class MainActivity : AppCompatActivity() {
                     kitStyle = TeamKitStyle(
                         fieldPlayerShirtStyle = ShirtStyle.COLLAR,
                         goalkeeperShirtStyle = ShirtStyle.GOALKEEPER
-                    ),
-                    attackDirection = AttackDirection.RightToLeft
+                    )
                 )
             )
 
@@ -48,7 +45,7 @@ class MainActivity : AppCompatActivity() {
 
             FootballPitch(
                 style = PitchStyle(
-                    background = PitchBackground.Checkerboard()
+                    background = PitchBackground.Stripes()
                 ),
                 homeTeam = homeLineup,
                 awayTeam = awayLineup

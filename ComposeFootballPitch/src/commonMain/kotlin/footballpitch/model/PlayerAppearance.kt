@@ -30,7 +30,7 @@ enum class ShirtStyle {
     /**
      * Shirt with an emphasised collar area for extra visual detail.
      */
-    COLLAR
+    COLLAR,
 }
 
 /**
@@ -48,6 +48,5 @@ data class PlayerAppearance(
     /** Optional squad number rendered as a badge on the shirt. */
     val number: String? = null,
     /** Color used for the number badge outline. */
-    val numberColor: Color = Color.White
+    val numberColor: Color = Color.White,
 )
-

@@ -21,8 +21,13 @@ data class TeamSetup(
     val formation: Formation,
     /** Default shirt styles for field players and goalkeeper. */
     val kitStyle: TeamKitStyle = TeamKitStyle(),
-    /** Direction this team is attacking (left-to-right or right-to-left). */
-    val attackDirection: AttackDirection = AttackDirection.LeftToRight
+    /**
+     * Direction this team is attacking (left-to-right or right-to-left).
+     *
+     * When using [MatchTeams.toLineups] this is auto-mirrored to keep teams
+     * facing each other, so callers usually do not need to set it manually.
+     */
+    val attackDirection: AttackDirection = AttackDirection.LeftToRight,
 )
 
 /**
@@ -31,23 +36,35 @@ data class TeamSetup(
 @Immutable
 data class MatchTeams(
     val home: TeamSetup,
-    val away: TeamSetup
+    val away: TeamSetup,
 )
 
 /**
  * Convert this [TeamSetup] to a [TeamLineup] suitable for [footballpitch.FootballPitch].
+ *
+ * @param resolvedAttackDirection Direction to render the lineup; defaults to the setup value
+ * but can be overridden (e.g. when auto-mirroring home/away teams).
  */
-fun TeamSetup.toTeamLineup(): TeamLineup =
+fun TeamSetup.toTeamLineup(resolvedAttackDirection: AttackDirection = attackDirection): TeamLineup =
     formation.toTeamLineup(
         teamName = name,
         colorArgb = colorArgb,
         goalkeeperColorArgb = goalkeeperColorArgb,
         kitStyle = kitStyle,
-        attackDirection = attackDirection
+        attackDirection = resolvedAttackDirection,
     )
 
 /**
- * Convert both [home] and [away] setups into [TeamLineup]s for rendering.
+ * Convert both [home] and [away] setups into [TeamLineup]s for rendering, automatically
+ * mirroring the away side so that teams face each other without overlapping formations.
  */
-fun MatchTeams.toLineups(): Pair<TeamLineup, TeamLineup> =
-    home.toTeamLineup() to away.toTeamLineup()
+fun MatchTeams.toLineups(): Pair<TeamLineup, TeamLineup> {
+    val homeDirection = home.attackDirection
+    val awayDirection =
+        when (away.attackDirection) {
+            homeDirection -> homeDirection.opposite()
+            else -> away.attackDirection
+        }
+
+    return home.toTeamLineup(homeDirection) to away.toTeamLineup(awayDirection)
+}

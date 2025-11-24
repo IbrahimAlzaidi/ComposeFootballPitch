@@ -3,10 +3,11 @@ package footballpitch.model
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 
-private val DefaultGrassColors = listOf(
-    Color(0xFF166C31),
-    Color(0xFF0E5A26)
-)
+private val DefaultGrassColors =
+    listOf(
+        Color(0xFF166C31),
+        Color(0xFF0E5A26),
+    )
 
 /**
  * Orientation of stripe backgrounds when [PitchBackground.Stripes] is used.
@@ -14,8 +15,9 @@ private val DefaultGrassColors = listOf(
 enum class StripeOrientation {
     /** Stripes run parallel to the touchlines. */
     Vertical,
+
     /** Stripes run parallel to the goal-lines. */
-    Horizontal
+    Horizontal,
 }
 
 /**
@@ -24,10 +26,12 @@ enum class StripeOrientation {
 enum class GradientDirection {
     /** Gradient runs from top to bottom. */
     Vertical,
+
     /** Gradient runs from left to right. */
     Horizontal,
+
     /** Gradient runs from top-left to bottom-right. */
-    Diagonal
+    Diagonal,
 }
 
 /**
@@ -38,13 +42,12 @@ enum class GradientDirection {
  */
 @Immutable
 sealed interface PitchBackground {
-
     /**
      * Simple, solid-colour background (no stripes or patterns).
      */
     @Immutable
     data class Solid(
-        val color: Color
+        val color: Color,
     ) : PitchBackground
 
     /**
@@ -56,7 +59,7 @@ sealed interface PitchBackground {
     data class Stripes(
         val colors: List<Color> = DefaultGrassColors,
         val stripeCount: Int = 8,
-        val orientation: StripeOrientation = StripeOrientation.Vertical
+        val orientation: StripeOrientation = StripeOrientation.Vertical,
     ) : PitchBackground
 
     /**
@@ -66,7 +69,7 @@ sealed interface PitchBackground {
     data class Checkerboard(
         val colors: List<Color> = DefaultGrassColors,
         val rows: Int = 8,
-        val columns: Int = 8
+        val columns: Int = 8,
     ) : PitchBackground
 
     /**
@@ -75,7 +78,7 @@ sealed interface PitchBackground {
     @Immutable
     data class Gradient(
         val colors: List<Color> = DefaultGrassColors,
-        val direction: GradientDirection = GradientDirection.Vertical
+        val direction: GradientDirection = GradientDirection.Vertical,
     ) : PitchBackground
 }
 
@@ -97,6 +100,5 @@ data class PitchStyle(
      * Values greater than 1f make lines thicker; values between 0f and 1f
      * make them thinner. Negative values are clamped to 0f.
      */
-    val lineThicknessFactor: Float = 1f
+    val lineThicknessFactor: Float = 1f,
 )
-

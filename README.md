@@ -52,8 +52,8 @@ The main entry point is the `FootballPitch` composable:
 
 ```kotlin
 FootballPitch(
-    teamA = homeTeam,
-    teamB = awayTeam
+    homeTeam = homeTeam,
+    awayTeam = awayTeam
 )
 ```
 
@@ -79,8 +79,7 @@ fun MatchScreen() {
             kitStyle = TeamKitStyle(
                 fieldPlayerShirtStyle = ShirtStyle.STRIPED,
                 goalkeeperShirtStyle = ShirtStyle.GOALKEEPER
-            ),
-            attackDirection = AttackDirection.LeftToRight
+            )
         ),
         away = TeamSetup(
             name = "Away",
@@ -90,8 +89,7 @@ fun MatchScreen() {
             kitStyle = TeamKitStyle(
                 fieldPlayerShirtStyle = ShirtStyle.COLLAR,
                 goalkeeperShirtStyle = ShirtStyle.GOALKEEPER
-            ),
-            attackDirection = AttackDirection.RightToLeft
+            )
         )
     )
 
@@ -103,15 +101,15 @@ fun MatchScreen() {
                 colors = listOf(Color(0xFF166C31), Color(0xFF0E5A26)),
             )
         ),
-        teamA = homeLineup,
-        teamB = awayLineup
+        homeTeam = homeLineup,
+        awayTeam = awayLineup
     )
 }
 ```
 
 This gives you:
 
-- Non‑overlapping home/away teams (mirrored with `AttackDirection`).
+- Non-overlapping home/away teams (attack directions mirrored automatically, override with `AttackDirection` if needed).
 - A configurable formation for each team.
 - Different shirt styles per team via `TeamKitStyle`.
 
@@ -267,7 +265,8 @@ Player positions are generated as:
 - Goalkeeper near own goal.
 - Defenders closer to own box.
 - Midfield line around the centre.
-- Forwards near the opponent’s box.
+- Forwards near the opponent box.
+- Squad numbers (1-11) are assigned automatically in formation order and rendered on the shirts.
 
 ### Attack direction (home vs away)
 
@@ -280,23 +279,21 @@ enum class AttackDirection {
 }
 ```
 
-It is used by formation helpers and by `TeamSetup`:
+`MatchTeams.toLineups()` mirrors the away team automatically so you rarely need to set it yourself, but you can override when you want a specific side to attack a given goal:
 
 ```kotlin
 val home = TeamSetup(
     // ...
-    formation = Formations.fourFourTwo(),
-    attackDirection = AttackDirection.LeftToRight
+    formation = Formations.fourFourTwo()
+    // Defaults to left-to-right
 )
 
 val away = TeamSetup(
     // ...
     formation = Formations.fourThreeThree(),
-    attackDirection = AttackDirection.RightToLeft
+    attackDirection = AttackDirection.RightToLeft // optional override
 )
 ```
-
-Internally, the X coordinates are mirrored when `RightToLeft` is selected, so both teams always have a goalkeeper at their own end and matching formations do not overlap.
 
 ---
 
@@ -334,7 +331,7 @@ Before publishing:
 
 ## Roadmap ideas
 
-- Text rendering for player numbers and names.
+- Player names rendered alongside shirt numbers.
 - Bench / substitutes visualisation.
 - More advanced pitch themes (TV broadcast, training mode, dark mode).
 - Animation utilities (player movement, ball path).
@@ -346,4 +343,5 @@ Before publishing:
 This project is based on the [compose-multiplatform-library-template](https://github.com/KevinnZou/compose-multiplatform-library-template).
 
 See `LICENSE.txt` in this repository for license details.
+
 

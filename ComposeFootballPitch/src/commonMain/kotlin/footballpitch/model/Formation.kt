@@ -13,7 +13,7 @@ import androidx.compose.runtime.Immutable
 data class Formation(
     val defenders: Int,
     val midfielders: Int,
-    val forwards: Int
+    val forwards: Int,
 ) {
     init {
         require(defenders >= 0) { "defenders must be >= 0" }
@@ -33,14 +33,22 @@ enum class AttackDirection {
     LeftToRight,
 
     /** Team attacks from the right goal towards the left goal (mirrored). */
-    RightToLeft
+    RightToLeft,
 }
+
+/**
+ * Return the opposite direction to ensure two teams face each other.
+ */
+fun AttackDirection.opposite(): AttackDirection =
+    when (this) {
+        AttackDirection.LeftToRight -> AttackDirection.RightToLeft
+        AttackDirection.RightToLeft -> AttackDirection.LeftToRight
+    }
 
 /**
  * Convenience helpers for generating basic formations and lineups.
  */
 object Formations {
-
     /** Classic 4-4-2 formation. */
     fun fourFourTwo(): Formation = Formation(defenders = 4, midfielders = 4, forwards = 2)
 
@@ -81,14 +89,23 @@ object Formations {
  * orientation parameter on [footballpitch.FootballPitch] will rotate them
  * as needed. [attackDirection] controls whether the team is laid out from
  * left-to-right or mirrored right-to-left.
+ *
+ * Squad numbers are generated automatically and kept in the 1–11 range so
+ * that callers do not need to provide them manually.
  */
 fun Formation.toPlayers(
     includeGoalkeeper: Boolean = true,
     startingNumber: Int = 1,
-    attackDirection: AttackDirection = AttackDirection.LeftToRight
+    attackDirection: AttackDirection = AttackDirection.LeftToRight,
 ): List<Player> {
     val players = mutableListOf<Player>()
     var nextNumber = startingNumber
+
+    fun nextSquadNumber(): Int {
+        val normalized = ((nextNumber - 1) % 11) + 1
+        nextNumber++
+        return normalized
+    }
 
     fun mirrorX(x: Float): Float =
         when (attackDirection) {
@@ -96,28 +113,34 @@ fun Formation.toPlayers(
             AttackDirection.RightToLeft -> 1f - x
         }
 
-    // Base X positions for a left-to-right attacking team.
-    val gkX = mirrorX(0.06f)
-    val defendersX = mirrorX(0.18f)
-    val midfieldersX = mirrorX(0.5f)
-    val forwardsX = mirrorX(0.9f)
+    // Base X positions for a left-to-right attacking team. Anchored to typical
+    // zones (six-yard box, penalty area, own half, final third).
+    val gkX = mirrorX(0.07f)
+    val defendersX = mirrorX(0.22f)
+    val midfieldersX = mirrorX(0.46f)
+    val forwardsX = mirrorX(0.76f)
 
     if (includeGoalkeeper) {
-        players += Player(
-            position = PitchPosition(x = gkX, y = 0.5f),
-            number = nextNumber++,
-            isGoalkeeper = true
-        )
+        players +=
+            Player(
+                position = PitchPosition(x = gkX, y = 0.5f),
+                number = nextSquadNumber(),
+                isGoalkeeper = true,
+            )
     }
 
-    fun addLine(count: Int, x: Float) {
+    fun addLine(
+        count: Int,
+        x: Float,
+    ) {
         if (count <= 0) return
         val ys = evenlySpacedY(count)
         ys.forEach { y ->
-            players += Player(
-                position = PitchPosition(x = x, y = y),
-                number = nextNumber++
-            )
+            players +=
+                Player(
+                    position = PitchPosition(x = x, y = y),
+                    number = nextSquadNumber(),
+                )
         }
     }
 
@@ -134,41 +157,50 @@ fun Formation.toPlayers(
  *
  * This is intentionally simple: it generates evenly spaced defenders,
  * midfielders and forwards, plus a single goalkeeper. You can always
- * override or fine-tune the resulting [TeamLineup.players] list.
+ * override or fine-tune the resulting [TeamLineup.players] list. By default
+ * it numbers the squad 1-11 in order of placement and attacks left-to-right;
+ * use [MatchTeams.toLineups] to auto-mirror the away side.
  */
 fun Formation.toTeamLineup(
     teamName: String,
     colorArgb: Long,
     goalkeeperColorArgb: Long? = null,
     kitStyle: TeamKitStyle = TeamKitStyle(),
-    attackDirection: AttackDirection = AttackDirection.LeftToRight
+    attackDirection: AttackDirection = AttackDirection.LeftToRight,
 ): TeamLineup {
-    val players = toPlayers(
-        includeGoalkeeper = true,
-        startingNumber = 1,
-        attackDirection = attackDirection
-    )
+    val players =
+        toPlayers(
+            includeGoalkeeper = true,
+            startingNumber = 1,
+            attackDirection = attackDirection,
+        )
     return TeamLineup(
         teamName = teamName,
         colorArgb = colorArgb,
         goalkeeperColorArgb = goalkeeperColorArgb,
         players = players,
-        kitStyle = kitStyle
+        kitStyle = kitStyle,
     )
 }
 
 /**
- * Evenly distribute [count] players between the bottom and top of the pitch.
+ * Evenly distribute [count] players from bottom to top while keeping narrow lines
+ * closer to the centre. This avoids wide players hugging the touchlines when only
+ * a few are present (e.g. two centre-backs).
  */
 private fun evenlySpacedY(count: Int): List<Float> {
     if (count <= 0) return emptyList()
     if (count == 1) return listOf(0.5f)
 
-    val minY = 0.12f
-    val maxY = 0.88f
-    val step = (maxY - minY) / (count - 1)
+    // Expand the spread gradually as the line gets busier to keep pairs/triangles compact.
+    val baseSpan = 0.34f // span used for a pair
+    val maxAdditionalSpan = 0.46f // extra spread added for larger lines
+    val normalizedCount = (count - 1).coerceAtLeast(1)
+    val span = (baseSpan + maxAdditionalSpan * (normalizedCount / 6f)).coerceAtMost(0.8f)
 
-    return List(count) { index ->
-        (minY + step * index).coerceIn(0f, 1f)
-    }
+    val start = (0.5f - span / 2f).coerceAtLeast(0.08f)
+    val end = (0.5f + span / 2f).coerceAtMost(0.92f)
+    val step = (end - start) / (count - 1)
+
+    return List(count) { index -> start + step * index }
 }

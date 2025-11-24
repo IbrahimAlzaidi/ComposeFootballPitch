@@ -16,6 +16,5 @@ data class PitchDimensions(
     val goalAreaWidth: Float,
     val penaltyMarkDistance: Float,
     val circleRadius: Float,
-    val cornerArcRadius: Float
+    val cornerArcRadius: Float,
 )
-

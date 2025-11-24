@@ -13,6 +13,5 @@ data class TeamKitStyle(
     /** Shirt style used for all outfield players (non-goalkeepers). */
     val fieldPlayerShirtStyle: ShirtStyle = ShirtStyle.CLASSIC,
     /** Shirt style used for the goalkeeper. */
-    val goalkeeperShirtStyle: ShirtStyle = ShirtStyle.GOALKEEPER
+    val goalkeeperShirtStyle: ShirtStyle = ShirtStyle.GOALKEEPER,
 )
-

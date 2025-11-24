@@ -8,8 +8,11 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import footballpitch.PitchScaleCalculator
 import footballpitch.model.GradientDirection
 import footballpitch.model.PitchBackground
+import footballpitch.model.PitchOrientation
 import footballpitch.model.PitchStyle
 import footballpitch.model.StripeOrientation
+
+internal data class BoxSpec(val topLeft: Offset, val size: Size)
 
 /**
  * Computes the effective line width using the logical scale and style factor.
@@ -31,7 +34,7 @@ internal fun DrawScope.drawPitchBackground(style: PitchStyle) {
             drawRect(
                 color = background.color,
                 topLeft = Offset.Zero,
-                size = size
+                size = size,
             )
         }
 
@@ -46,7 +49,7 @@ internal fun DrawScope.drawPitchBackground(style: PitchStyle) {
                         drawRect(
                             color = colors[i % colors.size],
                             topLeft = Offset(x = i * stripeWidth, y = 0f),
-                            size = Size(width = stripeWidth, height = size.height)
+                            size = Size(width = stripeWidth, height = size.height),
                         )
                     }
                 }
@@ -56,7 +59,7 @@ internal fun DrawScope.drawPitchBackground(style: PitchStyle) {
                         drawRect(
                             color = colors[i % colors.size],
                             topLeft = Offset(x = 0f, y = i * stripeHeight),
-                            size = Size(width = size.width, height = stripeHeight)
+                            size = Size(width = size.width, height = stripeHeight),
                         )
                     }
                 }
@@ -77,11 +80,12 @@ internal fun DrawScope.drawPitchBackground(style: PitchStyle) {
                     val colorIndex = (row + col) % colors.size
                     drawRect(
                         color = colors[colorIndex],
-                        topLeft = Offset(
-                            x = col * cellWidth,
-                            y = row * cellHeight
-                        ),
-                        size = Size(width = cellWidth, height = cellHeight)
+                        topLeft =
+                            Offset(
+                                x = col * cellWidth,
+                                y = row * cellHeight,
+                            ),
+                        size = Size(width = cellWidth, height = cellHeight),
                     )
                 }
             }
@@ -94,62 +98,69 @@ internal fun DrawScope.drawPitchBackground(style: PitchStyle) {
                 drawRect(
                     color = colors.first(),
                     topLeft = Offset.Zero,
-                    size = size
+                    size = size,
                 )
                 return
             }
 
-            val (start, end) = when (background.direction) {
-                GradientDirection.Vertical ->
-                    Offset(0f, 0f) to Offset(0f, size.height)
-                GradientDirection.Horizontal ->
-                    Offset(0f, 0f) to Offset(size.width, 0f)
-                GradientDirection.Diagonal ->
-                    Offset(0f, 0f) to Offset(size.width, size.height)
-            }
+            val (start, end) =
+                when (background.direction) {
+                    GradientDirection.Vertical ->
+                        Offset(0f, 0f) to Offset(0f, size.height)
+                    GradientDirection.Horizontal ->
+                        Offset(0f, 0f) to Offset(size.width, 0f)
+                    GradientDirection.Diagonal ->
+                        Offset(0f, 0f) to Offset(size.width, size.height)
+                }
 
-            val brush = Brush.linearGradient(
-                colors = colors,
-                start = start,
-                end = end
-            )
+            val brush =
+                Brush.linearGradient(
+                    colors = colors,
+                    start = start,
+                    end = end,
+                )
 
             drawRect(
                 brush = brush,
                 topLeft = Offset.Zero,
-                size = size
+                size = size,
             )
         }
     }
 }
-
 
 /**
  * Draw outer boundary and halfway line
  */
 internal fun DrawScope.drawBoundaryLines(
     scale: PitchScaleCalculator,
-    style: PitchStyle
+    style: PitchStyle,
 ) {
     val lineWidth = style.effectiveLineWidth(scale)
+    val inset = lineWidth / 2f
 
-    // Outer boundary
+    val boundary = boundarySpec(lineWidth, size)
+
     drawRect(
         color = style.lineColor,
-        topLeft = Offset.Zero,
-        size = scale.canvasSize,
-        style = Stroke(width = lineWidth)
+        topLeft = boundary.topLeft,
+        size = boundary.size,
+        style = Stroke(width = lineWidth),
     )
 
-    // Halfway line
+    val halfPrimary = scale.dimensions.length / 2f
+    val isVertical = scale.orientation == PitchOrientation.Vertical || scale.orientation == PitchOrientation.VerticalReversed
+    val secondaryInset = if (isVertical) Offset(inset, 0f) else Offset(0f, inset)
+    val start = scale.pitchOffset(primaryMeters = halfPrimary, secondaryMetersFromTop = 0f) + secondaryInset
+    val end = scale.pitchOffset(primaryMeters = halfPrimary, secondaryMetersFromTop = scale.dimensions.width) - secondaryInset
+
     drawLine(
         color = style.lineColor,
-        start = Offset(x = scale.lengthPx / 2f, y = 0f),
-        end = Offset(x = scale.lengthPx / 2f, y = scale.widthPx),
-        strokeWidth = lineWidth
+        start = start,
+        end = end,
+        strokeWidth = lineWidth,
     )
 }
-
 
 /**
  * Draw center circle and center spot
@@ -157,25 +168,70 @@ internal fun DrawScope.drawBoundaryLines(
 internal fun DrawScope.drawCenterArea(
     scale: PitchScaleCalculator,
     style: PitchStyle,
-    showCenterCircle: Boolean
+    showCenterCircle: Boolean,
 ) {
     val lineWidth = style.effectiveLineWidth(scale)
     val centerSpotRadius = lineWidth / 2f
 
     if (showCenterCircle) {
-        val centreCircleRadiusPx = scale.toPx(scale.dimensions.circleRadius)
+        val centreCircleRadiusPx = scale.primaryToPx(scale.dimensions.circleRadius)
         drawCircle(
             color = style.lineColor,
             radius = centreCircleRadiusPx,
             center = scale.center,
-            style = Stroke(width = lineWidth)
+            style = Stroke(width = lineWidth),
         )
     }
 
     drawCircle(
         color = style.lineColor,
         radius = centerSpotRadius,
-        center = scale.center
+        center = scale.center,
+    )
+}
+
+internal fun boundarySpec(
+    lineWidth: Float,
+    canvasSize: Size,
+): BoxSpec {
+    val inset = lineWidth / 2f
+    return BoxSpec(
+        topLeft = Offset(inset, inset),
+        size = Size(width = canvasSize.width - lineWidth, height = canvasSize.height - lineWidth),
+    )
+}
+
+internal fun penaltyBoxSpecs(
+    scale: PitchScaleCalculator,
+    lineWidth: Float,
+): List<BoxSpec> {
+    val penaltyTopMeters = (scale.dimensions.width - scale.dimensions.penaltyAreaWidth) / 2f
+    val boxSize =
+        scale.pitchSize(
+            primaryMeters = scale.dimensions.penaltyAreaDepth,
+            secondaryMeters = scale.dimensions.penaltyAreaWidth,
+        )
+    val adjustedBoxSize =
+        Size(
+            width = (boxSize.width - lineWidth).coerceAtLeast(0f),
+            height = (boxSize.height - lineWidth).coerceAtLeast(0f),
+        )
+    val inset = Offset(lineWidth / 2f, lineWidth / 2f)
+
+    val nearBoxTopLeft =
+        scale.pitchOffset(
+            primaryMeters = 0f,
+            secondaryMetersFromTop = penaltyTopMeters,
+        )
+    val farBoxTopLeft =
+        scale.pitchOffset(
+            primaryMeters = scale.dimensions.length - scale.dimensions.penaltyAreaDepth,
+            secondaryMetersFromTop = penaltyTopMeters,
+        )
+
+    return listOf(
+        BoxSpec(topLeft = nearBoxTopLeft + inset, size = adjustedBoxSize),
+        BoxSpec(topLeft = farBoxTopLeft + inset, size = adjustedBoxSize),
     )
 }
 
@@ -184,28 +240,51 @@ internal fun DrawScope.drawCenterArea(
  */
 internal fun DrawScope.drawPenaltyAreas(
     scale: PitchScaleCalculator,
-    style: PitchStyle
+    style: PitchStyle,
 ) {
     val lineWidth = style.effectiveLineWidth(scale)
 
-    val penaltyDepthPx = scale.toPx(scale.dimensions.penaltyAreaDepth)
-    val penaltyWidthPx = scale.toPx(scale.dimensions.penaltyAreaWidth)
-    val penaltyTop = (scale.widthPx - penaltyWidthPx) / 2f
+    penaltyBoxSpecs(scale, lineWidth).forEach { box ->
+        drawRect(
+            color = style.lineColor,
+            topLeft = box.topLeft,
+            size = box.size,
+            style = Stroke(width = lineWidth),
+        )
+    }
+}
 
-    // Left penalty area
-    drawRect(
-        color = style.lineColor,
-        topLeft = Offset(x = 0f, y = penaltyTop),
-        size = Size(width = penaltyDepthPx, height = penaltyWidthPx),
-        style = Stroke(width = lineWidth)
-    )
+internal fun goalBoxSpecs(
+    scale: PitchScaleCalculator,
+    lineWidth: Float,
+): List<BoxSpec> {
+    val goalTopMeters = (scale.dimensions.width - scale.dimensions.goalAreaWidth) / 2f
+    val boxSize =
+        scale.pitchSize(
+            primaryMeters = scale.dimensions.goalAreaDepth,
+            secondaryMeters = scale.dimensions.goalAreaWidth,
+        )
+    val adjustedBoxSize =
+        Size(
+            width = (boxSize.width - lineWidth).coerceAtLeast(0f),
+            height = (boxSize.height - lineWidth).coerceAtLeast(0f),
+        )
+    val inset = Offset(lineWidth / 2f, lineWidth / 2f)
 
-    // Right penalty area
-    drawRect(
-        color = style.lineColor,
-        topLeft = Offset(x = scale.lengthPx - penaltyDepthPx, y = penaltyTop),
-        size = Size(width = penaltyDepthPx, height = penaltyWidthPx),
-        style = Stroke(width = lineWidth)
+    val nearBoxTopLeft =
+        scale.pitchOffset(
+            primaryMeters = 0f,
+            secondaryMetersFromTop = goalTopMeters,
+        )
+    val farBoxTopLeft =
+        scale.pitchOffset(
+            primaryMeters = scale.dimensions.length - scale.dimensions.goalAreaDepth,
+            secondaryMetersFromTop = goalTopMeters,
+        )
+
+    return listOf(
+        BoxSpec(topLeft = nearBoxTopLeft + inset, size = adjustedBoxSize),
+        BoxSpec(topLeft = farBoxTopLeft + inset, size = adjustedBoxSize),
     )
 }
 
@@ -214,29 +293,18 @@ internal fun DrawScope.drawPenaltyAreas(
  */
 internal fun DrawScope.drawGoalAreas(
     scale: PitchScaleCalculator,
-    style: PitchStyle
+    style: PitchStyle,
 ) {
     val lineWidth = style.effectiveLineWidth(scale)
 
-    val goalDepthPx = scale.toPx(scale.dimensions.goalAreaDepth)
-    val goalWidthPx = scale.toPx(scale.dimensions.goalAreaWidth)
-    val goalTop = (scale.widthPx - goalWidthPx) / 2f
-
-    // Left goal area
-    drawRect(
-        color = style.lineColor,
-        topLeft = Offset(x = 0f, y = goalTop),
-        size = Size(width = goalDepthPx, height = goalWidthPx),
-        style = Stroke(width = lineWidth)
-    )
-
-    // Right goal area
-    drawRect(
-        color = style.lineColor,
-        topLeft = Offset(x = scale.lengthPx - goalDepthPx, y = goalTop),
-        size = Size(width = goalDepthPx, height = goalWidthPx),
-        style = Stroke(width = lineWidth)
-    )
+    goalBoxSpecs(scale, lineWidth).forEach { box ->
+        drawRect(
+            color = style.lineColor,
+            topLeft = box.topLeft,
+            size = box.size,
+            style = Stroke(width = lineWidth),
+        )
+    }
 }
 
 /**
@@ -244,28 +312,31 @@ internal fun DrawScope.drawGoalAreas(
  */
 internal fun DrawScope.drawPenaltySpots(
     scale: PitchScaleCalculator,
-    style: PitchStyle
+    style: PitchStyle,
 ) {
     val lineWidth = style.effectiveLineWidth(scale)
     val penaltySpotRadius = lineWidth / 2f
-    val leftPenaltySpot = Offset(
-        x = scale.toPx(scale.dimensions.penaltyMarkDistance),
-        y = scale.widthPx / 2f
-    )
-    val rightPenaltySpot = Offset(
-        x = scale.lengthPx - scale.toPx(scale.dimensions.penaltyMarkDistance),
-        y = scale.widthPx / 2f
-    )
+    val secondaryMid = scale.dimensions.width / 2f
+    val nearPenaltySpot =
+        scale.pitchOffset(
+            primaryMeters = scale.dimensions.penaltyMarkDistance,
+            secondaryMetersFromTop = secondaryMid,
+        )
+    val farPenaltySpot =
+        scale.pitchOffset(
+            primaryMeters = scale.dimensions.length - scale.dimensions.penaltyMarkDistance,
+            secondaryMetersFromTop = secondaryMid,
+        )
 
     drawCircle(
         color = style.lineColor,
         radius = penaltySpotRadius,
-        center = leftPenaltySpot
+        center = nearPenaltySpot,
     )
     drawCircle(
         color = style.lineColor,
         radius = penaltySpotRadius,
-        center = rightPenaltySpot
+        center = farPenaltySpot,
     )
 }
 
@@ -274,48 +345,55 @@ internal fun DrawScope.drawPenaltySpots(
  */
 internal fun DrawScope.drawPenaltyArcs(
     scale: PitchScaleCalculator,
-    style: PitchStyle
+    style: PitchStyle,
 ) {
     val lineWidth = style.effectiveLineWidth(scale)
 
-    val penaltyArcRadiusPx = scale.toPx(scale.dimensions.circleRadius)
+    val penaltyArcRadiusPx = scale.primaryToPx(scale.dimensions.circleRadius)
     val arcDiameter = penaltyArcRadiusPx * 2f
+    val secondaryMid = scale.dimensions.width / 2f
 
-    val leftPenaltySpot = Offset(
-        x = scale.toPx(scale.dimensions.penaltyMarkDistance),
-        y = scale.widthPx / 2f
-    )
-    val rightPenaltySpot = Offset(
-        x = scale.lengthPx - scale.toPx(scale.dimensions.penaltyMarkDistance),
-        y = scale.widthPx / 2f
-    )
+    val nearPenaltySpot =
+        scale.pitchOffset(
+            primaryMeters = scale.dimensions.penaltyMarkDistance,
+            secondaryMetersFromTop = secondaryMid,
+        )
+    val farPenaltySpot =
+        scale.pitchOffset(
+            primaryMeters = scale.dimensions.length - scale.dimensions.penaltyMarkDistance,
+            secondaryMetersFromTop = secondaryMid,
+        )
 
-    // Left penalty arc
+    val forwardAngle = scale.forwardAngleDegrees()
+    val nearStart = forwardAngle - 53f
+    val farStart = forwardAngle + 180f - 53f
+
     drawArc(
         color = style.lineColor,
-        startAngle = -53f,
+        startAngle = nearStart,
         sweepAngle = 106f,
         useCenter = false,
-        topLeft = Offset(
-            x = leftPenaltySpot.x - penaltyArcRadiusPx,
-            y = leftPenaltySpot.y - penaltyArcRadiusPx
-        ),
+        topLeft =
+            Offset(
+                x = nearPenaltySpot.x - penaltyArcRadiusPx,
+                y = nearPenaltySpot.y - penaltyArcRadiusPx,
+            ),
         size = Size(width = arcDiameter, height = arcDiameter),
-        style = Stroke(width = lineWidth)
+        style = Stroke(width = lineWidth),
     )
 
-    // Right penalty arc
     drawArc(
         color = style.lineColor,
-        startAngle = 180f - 53f,
+        startAngle = farStart,
         sweepAngle = 106f,
         useCenter = false,
-        topLeft = Offset(
-            x = rightPenaltySpot.x - penaltyArcRadiusPx,
-            y = rightPenaltySpot.y - penaltyArcRadiusPx
-        ),
+        topLeft =
+            Offset(
+                x = farPenaltySpot.x - penaltyArcRadiusPx,
+                y = farPenaltySpot.y - penaltyArcRadiusPx,
+            ),
         size = Size(width = arcDiameter, height = arcDiameter),
-        style = Stroke(width = lineWidth)
+        style = Stroke(width = lineWidth),
     )
 }
 
@@ -324,20 +402,25 @@ internal fun DrawScope.drawPenaltyArcs(
  */
 internal fun DrawScope.drawCornerArcs(
     scale: PitchScaleCalculator,
-    style: PitchStyle
+    style: PitchStyle,
 ) {
     val lineWidth = style.effectiveLineWidth(scale)
 
-    val cornerRadiusPx = scale.toPx(scale.dimensions.cornerArcRadius)
+    val cornerRadiusPx = scale.primaryToPx(scale.dimensions.cornerArcRadius)
     val cornerDiameter = cornerRadiusPx * 2f
 
     // Four corners
-    val corners = listOf(
-        Triple(0f, 0f, 0f),           // top-left
-        Triple(90f, scale.lengthPx, 0f), // top-right
-        Triple(270f, 0f, scale.widthPx), // bottom-left
-        Triple(180f, scale.lengthPx, scale.widthPx) // bottom-right
-    )
+    val corners =
+        listOf(
+            // top-left
+            Triple(0f, 0f, 0f),
+            // top-right
+            Triple(90f, size.width, 0f),
+            // bottom-left
+            Triple(270f, 0f, size.height),
+            // bottom-right
+            Triple(180f, size.width, size.height),
+        )
 
     corners.forEach { (startAngle, x, y) ->
         drawArc(
@@ -347,7 +430,7 @@ internal fun DrawScope.drawCornerArcs(
             useCenter = false,
             topLeft = Offset(x = x - cornerRadiusPx, y = y - cornerRadiusPx),
             size = Size(width = cornerDiameter, height = cornerDiameter),
-            style = Stroke(width = lineWidth)
+            style = Stroke(width = lineWidth),
         )
     }
 }
