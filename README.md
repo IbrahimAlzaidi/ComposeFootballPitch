@@ -9,6 +9,8 @@ It focuses on:
 - Configurable line thickness and colours.
 - Simple but extensible player/kit rendering.
 - Formation-aware lineups (4‑4‑2, 4‑3‑3, 3‑5‑2, etc.).
+- Orientation-aware scaling that keeps lines and player markers correctly placed in horizontal, vertical, and reversed layouts.
+- Basic geometry and rendering smoke tests to guard against regressions.
 
 ---
 
