@@ -175,7 +175,7 @@ class PitchScaleCalculator(
 /**
  * Main function to draw all pitch lines
  */
-private fun DrawScope.drawPitchLines(
+fun DrawScope.drawPitchLines(
     scale: PitchScaleCalculator,
     style: PitchStyle,
     showCenterCircle: Boolean,
