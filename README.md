@@ -1,183 +1,108 @@
-# Compose Football Pitch (Compose Multiplatform)
+# Compose Football Pitch (Compose Multiplatform) 🏟️
 
-A Compose Multiplatform library for rendering customizable football (soccer) pitches and team lineups across Android, Desktop, and iOS. Includes a sample playground app with interactive controls for backgrounds, formations, and team visibility.
+[![Build](https://github.com/IbrahimAlzaidi/ComposeFootballPitch/actions/workflows/build.yml/badge.svg)](https://github.com/IbrahimAlzaidi/ComposeFootballPitch/actions/workflows/build.yml)
+[![Code Style](https://github.com/IbrahimAlzaidi/ComposeFootballPitch/actions/workflows/code_style.yml/badge.svg)](https://github.com/IbrahimAlzaidi/ComposeFootballPitch/actions/workflows/code_style.yml)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE.txt)
+[![Kotlin](https://img.shields.io/badge/Kotlin-1.9.21-7f52ff?logo=kotlin)](https://kotlinlang.org)
+[![Compose](https://img.shields.io/badge/Compose_Multiplatform-1.5.11-0093d0?logo=jetpackcompose)](https://www.jetbrains.com/lp/compose-multiplatform/)
 
----
+A Compose Multiplatform library for rendering customizable football (soccer) pitches and team lineups across Android, Desktop, and iOS. Comes with a playground app for experimenting with formations, grass styles, and kit colors.
 
-## What you get
+## Preview ⚽
+![Football pitch preview](FootballPitch.png)
 
-- Accurate FIFA-style pitch lines with configurable thickness and colors.
-- Multiple pitch orientations: horizontal/vertical + reversed.
-- Grass backgrounds: stripes, solid, gradient, checkerboard (all color-configurable).
-- Team lineups generated from formations; mirrored attack directions to avoid overlap.
-- Simple kit rendering with shirt styles (classic, striped, collar, keeper, circle).
-- Compose-first API that works across Android, Desktop, and iOS.
+## Highlights ✨
+- ⚽ Accurate pitch markings based on FIFA guidance with configurable colors and thickness.
+- 🔄 Four orientations (horizontal or vertical, normal or reversed) plus mirrored attack directions for away teams.
+- 🌱 Grass backgrounds: solid, stripes, checkerboard, and gradients with custom palettes.
+- 🧢 Formation-aware lineups with simple shirt styles for field players and goalkeepers.
+- 📱 Pure Compose API shared across Android, Desktop, and iOS targets.
 
----
-
-## Modules
-
-- `ComposeFootballPitch` — the KMP library.
-- `sample/shared` — shared Compose code for the sample apps.
-- `sample/androidApp` — Android playground (fully wired with the latest UI).
-- `sample/desktopApp` / `sample/iosApp` — platform shells from the template (may need wiring depending on your setup).
-
----
-
-## Getting started
-
-Add the dependency once published (or depend on the included module directly):
+## Installation 📦
+Add the dependency once published (or depend on the included module while working in this repo):
 
 ```kotlin
+repositories {
+    mavenCentral()
+}
 dependencies {
     implementation("io.github.ibrahimalzaidi:compose-football-pitch:0.1.0")
-    // or, while working locally:
+    // or, when working locally:
     // implementation(project(":ComposeFootballPitch"))
 }
 ```
 
-Render a pitch:
+## Quick start 🚀
 
 ```kotlin
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import footballpitch.FootballPitch
 import footballpitch.model.*
-import androidx.compose.ui.graphics.Color
 
 @Composable
 fun MatchScreen() {
-    val matchTeams =
-        MatchTeams(
-            home =
-                TeamSetup(
-                    name = "Home",
-                    colorArgb = 0xFF1E88E5,
-                    goalkeeperColorArgb = 0xFFFFC107,
-                    formation = Formations.fourFourTwo(),
-                    kitStyle =
-                        TeamKitStyle(
-                            fieldPlayerShirtStyle = ShirtStyle.STRIPED,
-                            goalkeeperShirtStyle = ShirtStyle.GOALKEEPER,
-                        ),
-                ),
-            away =
-                TeamSetup(
-                    name = "Away",
-                    colorArgb = 0xFFEF5350,
-                    goalkeeperColorArgb = 0xFF8D6E63,
-                    formation = Formations.threeFourThree(),
-                    kitStyle =
-                        TeamKitStyle(
-                            fieldPlayerShirtStyle = ShirtStyle.COLLAR,
-                            goalkeeperShirtStyle = ShirtStyle.GOALKEEPER,
-                        ),
-                ),
-        )
-
+    val matchTeams = MatchTeams(
+        home = TeamSetup(
+            name = "Home",
+            colorArgb = 0xFF1E88E5,
+            goalkeeperColorArgb = 0xFFFFC107,
+            formation = Formations.fourFourTwo(),
+            kitStyle = TeamKitStyle(
+                fieldPlayerShirtStyle = ShirtStyle.STRIPED,
+                goalkeeperShirtStyle = ShirtStyle.GOALKEEPER,
+            ),
+        ),
+        away = TeamSetup(
+            name = "Away",
+            colorArgb = 0xFFEF5350,
+            goalkeeperColorArgb = 0xFF8D6E63,
+            formation = Formations.threeFourThree(),
+            kitStyle = TeamKitStyle(
+                fieldPlayerShirtStyle = ShirtStyle.COLLAR,
+                goalkeeperShirtStyle = ShirtStyle.GOALKEEPER,
+            ),
+        ),
+    )
     val (homeLineup, awayLineup) = matchTeams.toLineups()
 
     FootballPitch(
         orientation = PitchOrientation.Horizontal,
-        style =
-            PitchStyle(
-                background =
-                    PitchBackground.Gradient(
-                        colors = listOf(Color(0xFF166C31), Color(0xFF0E5A26)),
-                    ),
+        style = PitchStyle(
+            background = PitchBackground.Gradient(
+                colors = listOf(Color(0xFF166C31), Color(0xFF0E5A26)),
             ),
+        ),
         homeTeam = homeLineup,
         awayTeam = awayLineup,
     )
 }
 ```
 
----
+## Module layout 🗂️
+- `ComposeFootballPitch` - the KMP library.
+- `sample/shared` - shared Compose code for the sample apps.
+- `sample/androidApp` - Android playground wired to the latest UI.
+- `sample/desktopApp` and `sample/iosApp` - platform shells (wire as needed for your setup).
 
-## Core models
+## Run the samples ▶️
+- Android: `./gradlew :sample:androidApp:assembleDebug`
+- Desktop: `./gradlew :sample:desktopApp:run`
 
-- `PitchDimensions` — real-world meters; defaults match FIFA guidance.
-- `PitchOrientation` — `Horizontal`, `HorizontalReversed`, `Vertical`, `VerticalReversed`.
-- `PitchBackground` — `Solid`, `Stripes` (vertical/horizontal), `Checkerboard`, `Gradient` (directional).
-- `PitchStyle` — wraps background, line color, and line thickness factor.
-- `TeamSetup` / `MatchTeams` — high-level team definitions that convert to `TeamLineup` via `toLineups()`.
-- `Formation` / `Formations` — 4-4-2, 4-3-3, 3-5-2, etc.
-- `ShirtStyle` / `TeamKitStyle` — pick shirt rendering styles per role.
-- `AttackDirection` — left-to-right or right-to-left; mirrored automatically for away teams unless overridden.
-
-Positions use normalized coordinates (`x`, `y` in `[0f, 1f]`, origin bottom-left in default orientation).
-
----
-
-## Pitch backgrounds
-
-```kotlin
-PitchStyle(
-    background =
-        PitchBackground.Stripes(
-            colors = listOf(Color(0xFF166C31), Color(0xFF0E5A26)),
-            stripeCount = 10,
-            orientation = StripeOrientation.Vertical,
-        ),
-    lineColor = Color.White,
-    lineThicknessFactor = 1.0f,
-)
-```
-
-Options:
-
-- `Solid(color)`
-- `Stripes(colors, stripeCount, orientation)`
-- `Checkerboard(colors, rows, columns)`
-- `Gradient(colors, direction)`
-
----
-
-## Sample playground (Android)
-
-Path: `sample/androidApp`
-
-Key screen/components:
-
-- `PitchSwapScreen` — holds state for formations, kit colors, pitch backgrounds, and team visibility toggles.
-- `PitchPreviewCard` — renders the pitch with Crossfade when settings change.
-- `FormationCard` + `FormationPicker` — pick formations for home/away.
-- `ControlCard` — swap attacking direction, show/hide teams, pick kit colors.
-- `GroundStyleCard` — choose background type (stripes/solid/gradient/checkerboard), adjust stripe orientation/count, and pick grass colors.
-
-Run (Android):
-
-```bash
-./gradlew :sample:androidApp:assembleDebug
-```
-
-Run (Desktop sample shell, if configured):
-
-```bash
-./gradlew :sample:desktopApp:run
-```
-
----
-
-## Development
-
-- Core library sources: `ComposeFootballPitch/src/commonMain/kotlin/footballpitch`
+## Development 🛠️
+- Library sources: `ComposeFootballPitch/src/commonMain/kotlin/footballpitch`
 - Rendering internals: `ComposeFootballPitch/src/commonMain/kotlin/footballpitch/rendering`
-- Tests: `ComposeFootballPitch/src/commonTest` (snapshot/geometry checks)
+- Tests: `ComposeFootballPitch/src/commonTest`
 
 Useful tasks:
 
 ```bash
 ./gradlew :ComposeFootballPitch:check
-./gradlew :sample:androidApp:assembleDebug
+./gradlew ktlintCheck
 ```
 
----
+## Publishing notes 📣
+Gradle coordinates are set to `io.github.ibrahimalzaidi:compose-football-pitch:0.1.0`. Update them to match your Sonatype group before release.
 
-## Publishing notes
-
-Coordinates in Gradle are set to `io.github.ibrahimalzaidi:compose-football-pitch:0.1.0` (update to match your Sonatype group before release).
-
----
-
-## License
-
-See `LICENSE.txt`. This project started from the compose-multiplatform-library-template.
+## License 📄
+Apache 2.0. See `LICENSE.txt`.
