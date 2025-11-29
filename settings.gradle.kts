@@ -1,4 +1,4 @@
-rootProject.name = "compose-multiplatform-library-template"
+rootProject.name = "ComposeFootballPitch"
 
 include(":sample:androidApp")
 include(":ComposeFootballPitch")

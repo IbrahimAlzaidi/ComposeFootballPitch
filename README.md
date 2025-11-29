@@ -19,14 +19,14 @@ A Compose Multiplatform library for rendering customizable football (soccer) pit
 - 📱 Pure Compose API shared across Android, Desktop, and iOS targets.
 
 ## Installation 📦
-Add the dependency once published (or depend on the included module while working in this repo):
+Using JitPack (published tags, e.g., `v1.0.0`):
 
 ```kotlin
 repositories {
-    mavenCentral()
+    maven { url = uri("https://jitpack.io") }
 }
 dependencies {
-    implementation("io.github.ibrahimalzaidi:compose-football-pitch:0.1.0")
+    implementation("com.github.IbrahimAlzaidi:ComposeFootballPitch:1.0.0")
     // or, when working locally:
     // implementation(project(":ComposeFootballPitch"))
 }
@@ -102,7 +102,7 @@ Useful tasks:
 ```
 
 ## Publishing notes 📣
-Gradle coordinates are set to `io.github.ibrahimalzaidi:compose-football-pitch:0.1.0`. Update them to match your Sonatype group before release.
+Gradle coordinates are set to JitPack style: `com.github.IbrahimAlzaidi:ComposeFootballPitch:1.0.0` (matching tag `v1.0.0`). If publishing elsewhere, update the coordinates accordingly.
 
 ## License 📄
 Apache 2.0. See `LICENSE.txt`.

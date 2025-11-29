@@ -9,20 +9,25 @@ plugins {
 }
 
 kotlin {
+    // JitPack builds run on Linux; skip iOS targets unless the host is macOS.
+    val isMacOs = System.getProperty("os.name").lowercase().contains("mac")
+
     androidTarget {
         publishLibraryVariants("release")
     }
 
     jvm("desktop")
 
-    listOf(
-        iosX64(),
-        iosArm64(),
-        iosSimulatorArm64(),
-    ).forEach { iosTarget ->
-        iosTarget.binaries.framework {
-            baseName = "lib"
-            isStatic = true
+    if (isMacOs) {
+        listOf(
+            iosX64(),
+            iosArm64(),
+            iosSimulatorArm64(),
+        ).forEach { iosTarget ->
+            iosTarget.binaries.framework {
+                baseName = "lib"
+                isStatic = true
+            }
         }
     }
 
@@ -42,14 +47,16 @@ kotlin {
             dependencies {
             }
         }
-        val iosX64Main by getting
-        val iosArm64Main by getting
-        val iosSimulatorArm64Main by getting
-        val iosMain by creating {
-            dependsOn(commonMain)
-            iosX64Main.dependsOn(this)
-            iosArm64Main.dependsOn(this)
-            iosSimulatorArm64Main.dependsOn(this)
+        if (isMacOs) {
+            val iosX64Main by getting
+            val iosArm64Main by getting
+            val iosSimulatorArm64Main by getting
+            val iosMain by creating {
+                dependsOn(commonMain)
+                iosX64Main.dependsOn(this)
+                iosArm64Main.dependsOn(this)
+                iosSimulatorArm64Main.dependsOn(this)
+            }
         }
         val desktopMain by getting {
             dependencies {
@@ -86,7 +93,7 @@ mavenPublishing {
         signAllPublications()
     }
     // Coordinates used when this library is published to a Maven repository.
-    coordinates("io.github.ibrahimalzaidi", "compose-football-pitch", "0.1.0")
+    coordinates("com.github.IbrahimAlzaidi", "ComposeFootballPitch", "1.0.0")
 
     pom {
         name.set(project.name)
