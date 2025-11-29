@@ -3,16 +3,15 @@ package footballpitch
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.rememberTextMeasurer
-import androidx.compose.ui.unit.dp
 import footballpitch.model.PitchDimensions
 import footballpitch.model.PitchOrientation
 import footballpitch.model.PitchStyle
@@ -34,17 +33,20 @@ import kotlin.math.max
  * This is the main entry point for consumers of the library. It takes
  * dimension, styling and orientation configuration, and renders the pitch
  * consistently across platforms using Compose Multiplatform.
+ *
+ * @param contentDescription Optional semantics description announced to accessibility services.
  */
 @OptIn(ExperimentalTextApi::class)
 @Composable
 fun FootballPitch(
-    modifier: Modifier = Modifier.fillMaxWidth().padding(4.dp),
+    modifier: Modifier = Modifier,
     homeTeam: TeamLineup? = null,
     awayTeam: TeamLineup? = null,
     showCenterCircle: Boolean = true,
     dimensions: PitchDimensions = FIFA_DIMENSIONS,
     orientation: PitchOrientation = PitchOrientation.Horizontal,
     style: PitchStyle = PitchStyle(),
+    contentDescription: String? = null,
 ) {
     val textMeasurer = rememberTextMeasurer()
 
@@ -59,9 +61,10 @@ fun FootballPitch(
             -> 1f / baseRatio
         }
 
-    Canvas(
-        modifier = modifier.aspectRatio(aspectRatio),
-    ) {
+    val semanticsModifier =
+        contentDescription?.let { desc -> modifier.semantics { this.contentDescription = desc } } ?: modifier
+
+    Canvas(modifier = semanticsModifier.aspectRatio(aspectRatio)) {
         val scaleCalculator = PitchScaleCalculator(dimensions, size, orientation)
 
         drawPitchBackground(style)

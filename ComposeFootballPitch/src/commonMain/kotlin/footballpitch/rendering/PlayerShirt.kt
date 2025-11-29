@@ -9,6 +9,7 @@ import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
@@ -33,8 +34,9 @@ internal fun DrawScope.drawTeam(
 ) {
     val baseSize = size.minDimension * 0.035f
     val resolvedPlayers = resolvePlayers(team, scale, baseSize)
+    val textLayoutCache = mutableMapOf<String, TextLayoutResult>()
     resolvedPlayers.forEach { player ->
-        drawShirtIcon(player.center, player.appearance, player.baseSize, textMeasurer)
+        drawShirtIcon(player.center, player.appearance, player.baseSize, textMeasurer, textLayoutCache)
     }
 }
 
@@ -92,6 +94,7 @@ private fun DrawScope.drawShirtIcon(
     appearance: PlayerAppearance,
     baseSize: Float,
     textMeasurer: TextMeasurer,
+    textLayoutCache: MutableMap<String, TextLayoutResult>,
 ) {
     when (appearance.style) {
         ShirtStyle.CIRCLE -> {
@@ -102,6 +105,7 @@ private fun DrawScope.drawShirtIcon(
                     baseSize = baseSize,
                     appearance = appearance,
                     textMeasurer = textMeasurer,
+                    textLayoutCache = textLayoutCache,
                 )
             }
         }
@@ -134,6 +138,7 @@ private fun DrawScope.drawShirtIcon(
                     height = shirtHeight,
                     appearance = appearance,
                     textMeasurer = textMeasurer,
+                    textLayoutCache = textLayoutCache,
                 )
             }
         }
@@ -363,6 +368,7 @@ private fun DrawScope.drawPlayerNumber(
     height: Float,
     appearance: PlayerAppearance,
     textMeasurer: TextMeasurer,
+    textLayoutCache: MutableMap<String, TextLayoutResult>,
 ) {
     val badgeRadius = height * 0.18f
     val badgeCenterY = top + height * 0.6f
@@ -371,6 +377,7 @@ private fun DrawScope.drawPlayerNumber(
         radius = badgeRadius,
         appearance = appearance,
         textMeasurer = textMeasurer,
+        textLayoutCache = textLayoutCache,
     )
 }
 
@@ -383,6 +390,7 @@ private fun DrawScope.drawCircleNumber(
     baseSize: Float,
     appearance: PlayerAppearance,
     textMeasurer: TextMeasurer,
+    textLayoutCache: MutableMap<String, TextLayoutResult>,
 ) {
     val badgeRadius = baseSize * 0.9f
     drawNumberBadge(
@@ -390,6 +398,7 @@ private fun DrawScope.drawCircleNumber(
         radius = badgeRadius,
         appearance = appearance,
         textMeasurer = textMeasurer,
+        textLayoutCache = textLayoutCache,
     )
 }
 
@@ -402,6 +411,7 @@ private fun DrawScope.drawNumberBadge(
     radius: Float,
     appearance: PlayerAppearance,
     textMeasurer: TextMeasurer,
+    textLayoutCache: MutableMap<String, TextLayoutResult>,
 ) {
     val number = appearance.number ?: return
     val badgeFill =
@@ -417,16 +427,18 @@ private fun DrawScope.drawNumberBadge(
     drawCircle(color = strokeColor, center = center, radius = radius, style = Stroke(width = radius * 0.16f))
 
     val textLayout =
-        textMeasurer.measureNumber(
-            text = number,
-            style =
-                TextStyle(
-                    color = textColor,
-                    fontSize = (radius * 1.15f / (density * fontScale)).sp,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                ),
-        )
+        textLayoutCache.getOrPut("${number}_${radius}_${textColor.value}") {
+            textMeasurer.measureNumber(
+                text = number,
+                style =
+                    TextStyle(
+                        color = textColor,
+                        fontSize = (radius * 1.15f / (density * fontScale)).sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center,
+                    ),
+            )
+        }
 
     drawText(
         textLayoutResult = textLayout,

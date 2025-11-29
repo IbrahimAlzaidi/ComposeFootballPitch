@@ -27,6 +27,9 @@ data class Formation(
  *
  * This is used when generating player positions from a [Formation] so that
  * home and away teams can be mirrored horizontally and do not overlap.
+ * "Left" and "Right" refer to the default horizontal orientation before any
+ * [footballpitch.model.PitchOrientation] rotation is applied; vertical
+ * orientations rotate these positions so goals end up at the top/bottom.
  */
 enum class AttackDirection {
     /** Team attacks from the left goal towards the right goal. */

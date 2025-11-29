@@ -10,6 +10,12 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation(project(":sample:shared"))
+                implementation(compose.runtime)
+                implementation(compose.foundation)
+                implementation(compose.animation)
+                implementation(compose.material3)
+                @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
+                implementation(compose.materialIconsExtended)
             }
         }
     }

@@ -31,7 +31,6 @@ kotlin {
             dependencies {
                 implementation(compose.runtime)
                 implementation(compose.foundation)
-                implementation(compose.material3)
             }
         }
         val commonTest by getting {
@@ -61,7 +60,7 @@ kotlin {
 
 android {
     compileSdk = (findProperty("android.compileSdk") as String).toInt()
-    namespace = "com.myapplication.common"
+    namespace = "footballpitch"
 
     sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     sourceSets["main"].res.srcDirs("src/androidMain/res")
@@ -80,10 +79,12 @@ android {
 }
 
 mavenPublishing {
-    // Configure publishing to Maven Central (you can disable this until you are ready).
-    // publishToMavenCentral(SonatypeHost.DEFAULT)
-    publishToMavenCentral(SonatypeHost.S01, automaticRelease = true)
-    signAllPublications()
+    // Configure publishing to Maven Central only when explicitly requested to avoid CI/local failures.
+    val shouldPublish = (findProperty("publishToMavenCentral") as String?)?.toBoolean() == true
+    if (shouldPublish) {
+        publishToMavenCentral(SonatypeHost.S01, automaticRelease = true)
+        signAllPublications()
+    }
     // Coordinates used when this library is published to a Maven repository.
     coordinates("io.github.ibrahimalzaidi", "compose-football-pitch", "0.1.0")
 
