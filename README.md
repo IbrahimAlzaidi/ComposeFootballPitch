@@ -1,349 +1,183 @@
 # Compose Football Pitch (Compose Multiplatform)
 
-Compose Football Pitch is a **Compose Multiplatform** library for rendering customizable football (soccer) pitches and team lineups across Android, desktop, and iOS.
+A Compose Multiplatform library for rendering customizable football (soccer) pitches and team lineups across Android, Desktop, and iOS. Includes a sample playground app with interactive controls for backgrounds, formations, and team visibility.
 
-It focuses on:
+---
 
-- Accurate pitch lines based on real dimensions.
-- Flexible pitch orientation and backgrounds.
-- Configurable line thickness and colours.
-- Simple but extensible player/kit rendering.
-- Formation-aware lineups (4‑4‑2, 4‑3‑3, 3‑5‑2, etc.).
-- Orientation-aware scaling that keeps lines and player markers correctly placed in horizontal, vertical, and reversed layouts.
-- Basic geometry and rendering smoke tests to guard against regressions.
+## What you get
+
+- Accurate FIFA-style pitch lines with configurable thickness and colors.
+- Multiple pitch orientations: horizontal/vertical + reversed.
+- Grass backgrounds: stripes, solid, gradient, checkerboard (all color-configurable).
+- Team lineups generated from formations; mirrored attack directions to avoid overlap.
+- Simple kit rendering with shirt styles (classic, striped, collar, keeper, circle).
+- Compose-first API that works across Android, Desktop, and iOS.
 
 ---
 
 ## Modules
 
-The library is published as a Kotlin Multiplatform module:
-
-- Module: `ComposeFootballPitch`
-- Suggested Maven coordinates:
-  - Group: `io.github.ibrahimalzaidi`
-  - Artifact: `compose-football-pitch`
-  - Version: `0.1.0`
-
-> Note: Before publishing to Maven Central, ensure you control the `io.github.ibrahimalzaidi` group on Sonatype and adjust coordinates if needed.
+- `ComposeFootballPitch` — the KMP library.
+- `sample/shared` — shared Compose code for the sample apps.
+- `sample/androidApp` — Android playground (fully wired with the latest UI).
+- `sample/desktopApp` / `sample/iosApp` — platform shells from the template (may need wiring depending on your setup).
 
 ---
 
-## Installation
+## Getting started
 
-Once you publish the artifact (to Maven Central or your internal repository), add the dependency to your shared Gradle module:
+Add the dependency once published (or depend on the included module directly):
 
 ```kotlin
 dependencies {
     implementation("io.github.ibrahimalzaidi:compose-football-pitch:0.1.0")
+    // or, while working locally:
+    // implementation(project(":ComposeFootballPitch"))
 }
 ```
 
-For now, if you are using this project as a template, you can depend on the `ComposeFootballPitch` module directly from your app module:
+Render a pitch:
 
 ```kotlin
-dependencies {
-    implementation(project(":ComposeFootballPitch"))
-}
-```
-
----
-
-## Quick Start
-
-The main entry point is the `FootballPitch` composable:
-
-```kotlin
-FootballPitch(
-    homeTeam = homeTeam,
-    awayTeam = awayTeam
-)
-```
-
-Where `homeTeam` and `awayTeam` are instances of `TeamLineup`.
-
-To make this easier, the library provides higher‑level models to describe teams, kit styles, and formations.
-
-### Basic example with `TeamSetup` and `MatchTeams`
-
-```kotlin
-'import footballpitch.FootballPitch
-'import footballpitch.model.*
-'import androidx.compose.ui.graphics.Color
+import footballpitch.FootballPitch
+import footballpitch.model.*
+import androidx.compose.ui.graphics.Color
 
 @Composable
 fun MatchScreen() {
-    val matchTeams = MatchTeams(
-        home = TeamSetup(
-            name = "Home",
-            colorArgb = 0xFF1E88E5,          // blue
-            goalkeeperColorArgb = 0xFFFFC107,
-            formation = Formations.fourFourTwo(),
-            kitStyle = TeamKitStyle(
-                fieldPlayerShirtStyle = ShirtStyle.STRIPED,
-                goalkeeperShirtStyle = ShirtStyle.GOALKEEPER
-            )
-        ),
-        away = TeamSetup(
-            name = "Away",
-            colorArgb = 0xFFEF5350,          // red
-            goalkeeperColorArgb = 0xFF8D6E63,
-            formation = Formations.threeFourThree(),
-            kitStyle = TeamKitStyle(
-                fieldPlayerShirtStyle = ShirtStyle.COLLAR,
-                goalkeeperShirtStyle = ShirtStyle.GOALKEEPER
-            )
+    val matchTeams =
+        MatchTeams(
+            home =
+                TeamSetup(
+                    name = "Home",
+                    colorArgb = 0xFF1E88E5,
+                    goalkeeperColorArgb = 0xFFFFC107,
+                    formation = Formations.fourFourTwo(),
+                    kitStyle =
+                        TeamKitStyle(
+                            fieldPlayerShirtStyle = ShirtStyle.STRIPED,
+                            goalkeeperShirtStyle = ShirtStyle.GOALKEEPER,
+                        ),
+                ),
+            away =
+                TeamSetup(
+                    name = "Away",
+                    colorArgb = 0xFFEF5350,
+                    goalkeeperColorArgb = 0xFF8D6E63,
+                    formation = Formations.threeFourThree(),
+                    kitStyle =
+                        TeamKitStyle(
+                            fieldPlayerShirtStyle = ShirtStyle.COLLAR,
+                            goalkeeperShirtStyle = ShirtStyle.GOALKEEPER,
+                        ),
+                ),
         )
-    )
 
     val (homeLineup, awayLineup) = matchTeams.toLineups()
 
     FootballPitch(
-        style = PitchStyle(
-            background = PitchBackground.Gradient(
-                colors = listOf(Color(0xFF166C31), Color(0xFF0E5A26)),
-            )
-        ),
+        orientation = PitchOrientation.Horizontal,
+        style =
+            PitchStyle(
+                background =
+                    PitchBackground.Gradient(
+                        colors = listOf(Color(0xFF166C31), Color(0xFF0E5A26)),
+                    ),
+            ),
         homeTeam = homeLineup,
-        awayTeam = awayLineup
+        awayTeam = awayLineup,
     )
 }
 ```
 
-This gives you:
+---
 
-- Non-overlapping home/away teams (attack directions mirrored automatically, override with `AttackDirection` if needed).
-- A configurable formation for each team.
-- Different shirt styles per team via `TeamKitStyle`.
+## Core models
+
+- `PitchDimensions` — real-world meters; defaults match FIFA guidance.
+- `PitchOrientation` — `Horizontal`, `HorizontalReversed`, `Vertical`, `VerticalReversed`.
+- `PitchBackground` — `Solid`, `Stripes` (vertical/horizontal), `Checkerboard`, `Gradient` (directional).
+- `PitchStyle` — wraps background, line color, and line thickness factor.
+- `TeamSetup` / `MatchTeams` — high-level team definitions that convert to `TeamLineup` via `toLineups()`.
+- `Formation` / `Formations` — 4-4-2, 4-3-3, 3-5-2, etc.
+- `ShirtStyle` / `TeamKitStyle` — pick shirt rendering styles per role.
+- `AttackDirection` — left-to-right or right-to-left; mirrored automatically for away teams unless overridden.
+
+Positions use normalized coordinates (`x`, `y` in `[0f, 1f]`, origin bottom-left in default orientation).
 
 ---
 
-## Core Concepts
-
-### Pitch configuration
-
-**Dimensions**
-
-`PitchDimensions` describes the pitch in real‑world meters:
+## Pitch backgrounds
 
 ```kotlin
-val customDimensions = PitchDimensions(
-    length = 105f,
-    width = 68f,
-    penaltyAreaDepth = 16.5f,
-    penaltyAreaWidth = 40.32f,
-    goalAreaDepth = 5.5f,
-    goalAreaWidth = 18.32f,
-    penaltyMarkDistance = 11f,
-    circleRadius = 9.15f,
-    cornerArcRadius = 1f
-)
-```
-
-`FootballPitch` uses FIFA‑style defaults, but you can override them via the `dimensions` parameter.
-
-**Orientation**
-
-`PitchOrientation` controls where the goals are placed:
-
-```kotlin
-FootballPitch(
-    orientation = PitchOrientation.Vertical, // goals at top/bottom
-    // ...
-)
-```
-
-Supported values:
-
-- `Horizontal`, `HorizontalReversed`
-- `Vertical`, `VerticalReversed`
-
-### Pitch style & background
-
-`PitchStyle` configures how the pitch looks:
-
-```kotlin
-val style = PitchStyle(
-    background = PitchBackground.Stripes(
-        colors = listOf(Color(0xFF166C31), Color(0xFF0E5A26)),
-        stripeCount = 10,
-        orientation = StripeOrientation.Vertical
-    ),
+PitchStyle(
+    background =
+        PitchBackground.Stripes(
+            colors = listOf(Color(0xFF166C31), Color(0xFF0E5A26)),
+            stripeCount = 10,
+            orientation = StripeOrientation.Vertical,
+        ),
     lineColor = Color.White,
-    lineThicknessFactor = 1.2f
+    lineThicknessFactor = 1.0f,
 )
 ```
 
-Available backgrounds:
+Options:
 
-- `PitchBackground.Solid` – single grass colour.
-- `PitchBackground.Stripes` – alternating stripes (vertical/horizontal).
-- `PitchBackground.Checkerboard` – grid pattern.
-- `PitchBackground.Gradient` – linear gradient (vertical/horizontal/diagonal).
-
-`lineThicknessFactor` scales the default line width (based on real dimensions) up or down.
+- `Solid(color)`
+- `Stripes(colors, stripeCount, orientation)`
+- `Checkerboard(colors, rows, columns)`
+- `Gradient(colors, direction)`
 
 ---
 
-## Teams, kits, and formations
+## Sample playground (Android)
 
-### Positions and players
+Path: `sample/androidApp`
 
-`PitchPosition` uses normalized coordinates:
+Key screen/components:
 
-- `x` and `y` in `[0f, 1f]`
-- `(0f, 0f)` is bottom‑left, `(1f, 1f)` is top‑right in the default orientation.
+- `PitchSwapScreen` — holds state for formations, kit colors, pitch backgrounds, and team visibility toggles.
+- `PitchPreviewCard` — renders the pitch with Crossfade when settings change.
+- `FormationCard` + `FormationPicker` — pick formations for home/away.
+- `ControlCard` — swap attacking direction, show/hide teams, pick kit colors.
+- `GroundStyleCard` — choose background type (stripes/solid/gradient/checkerboard), adjust stripe orientation/count, and pick grass colors.
 
-```kotlin
-val player = Player(
-    position = PitchPosition(x = 0.7f, y = 0.4f),
-    number = 9,
-    isGoalkeeper = false
-)
+Run (Android):
+
+```bash
+./gradlew :sample:androidApp:assembleDebug
 ```
 
-`TeamLineup` is the structure passed to `FootballPitch`:
+Run (Desktop sample shell, if configured):
 
-```kotlin
-val team = TeamLineup(
-    teamName = "Home",
-    colorArgb = 0xFF1E88E5,
-    goalkeeperColorArgb = 0xFFFFC107,
-    players = listOf(player),
-    kitStyle = TeamKitStyle(
-        fieldPlayerShirtStyle = ShirtStyle.CLASSIC,
-        goalkeeperShirtStyle = ShirtStyle.GOALKEEPER
-    )
-)
-```
-
-### Shirt styles and kits
-
-`ShirtStyle` controls how player icons are drawn:
-
-- `CLASSIC` – V‑neck shirt with sleeves.
-- `GOALKEEPER` – keeper variant (ready for future customization).
-- `CIRCLE` – simple circular marker (good for tactical views).
-- `STRIPED` – classic shirt with simple vertical stripes.
-- `COLLAR` – classic shirt with a highlighted collar.
-
-`TeamKitStyle` selects the default style per role:
-
-```kotlin
-val kit = TeamKitStyle(
-    fieldPlayerShirtStyle = ShirtStyle.STRIPED,
-    goalkeeperShirtStyle = ShirtStyle.GOALKEEPER
-)
-```
-
-The renderer automatically applies these to each player based on `isGoalkeeper`.
-
-### Formations
-
-Formations are modeled as a simple three‑line system:
-
-```kotlin
-data class Formation(
-    val defenders: Int,
-    val midfielders: Int,
-    val forwards: Int
-)
-```
-
-Predefined formations (via `Formations`):
-
-- `Formations.fourFourTwo()` – 4‑4‑2
-- `Formations.fourThreeThree()` – 4‑3‑3
-- `Formations.fourFiveOne()` – 4‑5‑1
-- `Formations.fiveThreeTwo()` – 5‑3‑2
-- `Formations.fiveFourOne()` – 5‑4‑1
-- `Formations.threeFourThree()` – 3‑4‑3
-- `Formations.threeFiveTwo()` – 3‑5‑2
-- `Formations.fourTwoFour()` – 4‑2‑4
-- `Formations.threeSixOne()` – 3‑6‑1
-- `Formations.twoThreeFive()` – 2‑3‑5
-
-Player positions are generated as:
-
-- Goalkeeper near own goal.
-- Defenders closer to own box.
-- Midfield line around the centre.
-- Forwards near the opponent box.
-- Squad numbers (1-11) are assigned automatically in formation order and rendered on the shirts.
-
-### Attack direction (home vs away)
-
-`AttackDirection` ensures home and away teams do not overlap:
-
-```kotlin
-enum class AttackDirection {
-    LeftToRight,
-    RightToLeft
-}
-```
-
-`MatchTeams.toLineups()` mirrors the away team automatically so you rarely need to set it yourself, but you can override when you want a specific side to attack a given goal:
-
-```kotlin
-val home = TeamSetup(
-    // ...
-    formation = Formations.fourFourTwo()
-    // Defaults to left-to-right
-)
-
-val away = TeamSetup(
-    // ...
-    formation = Formations.fourThreeThree(),
-    attackDirection = AttackDirection.RightToLeft // optional override
-)
+```bash
+./gradlew :sample:desktopApp:run
 ```
 
 ---
 
-## Architecture overview
+## Development
 
-- **Public API (`footballpitch` and `footballpitch.model`)**
-  - `FootballPitch` composable.
-  - Data models: `PitchDimensions`, `PitchOrientation`, `PitchStyle`, `PitchBackground`, `PitchPosition`, `Formation`, `TeamLineup`, `Player`, `TeamSetup`, `MatchTeams`, `TeamKitStyle`, `PlayerAppearance`, `ShirtStyle`, `AttackDirection`.
-- **Rendering internals (`footballpitch.rendering`)**
-  - Pitch drawing functions (lines, background, circles, boxes).
-  - Player rendering (shirts, stripes, collars, markers, numbers).
-  - These are kept internal to keep the public API stable and easy to reason about.
+- Core library sources: `ComposeFootballPitch/src/commonMain/kotlin/footballpitch`
+- Rendering internals: `ComposeFootballPitch/src/commonMain/kotlin/footballpitch/rendering`
+- Tests: `ComposeFootballPitch/src/commonTest` (snapshot/geometry checks)
 
-This separation makes it easier to extend the visuals without breaking consumers.
+Useful tasks:
+
+```bash
+./gradlew :ComposeFootballPitch:check
+./gradlew :sample:androidApp:assembleDebug
+```
 
 ---
 
 ## Publishing notes
 
-The Gradle configuration for `ComposeFootballPitch` already includes a basic Maven publishing setup using `com.vanniktech.maven.publish`. Important fields:
-
-- Group ID: `io.github.ibrahimalzaidi`
-- Artifact ID: `compose-football-pitch`
-- Version: `0.1.0`
-- POM metadata:
-  - URL / SCM / developer info pointing to `https://github.com/IbrahimAlzaidi/ComposeFootballPitch`
-
-Before publishing:
-
-1. Make sure you have a Sonatype account and have requested access to the `io.github.ibrahimalzaidi` group.
-2. Update coordinates if you decide on a different group or artifact ID.
-3. Verify the license and POM fields match your repository setup.
-
----
-
-## Roadmap ideas
-
-- Player names rendered alongside shirt numbers.
-- Bench / substitutes visualisation.
-- More advanced pitch themes (TV broadcast, training mode, dark mode).
-- Animation utilities (player movement, ball path).
+Coordinates in Gradle are set to `io.github.ibrahimalzaidi:compose-football-pitch:0.1.0` (update to match your Sonatype group before release).
 
 ---
 
 ## License
 
-This project is based on the [compose-multiplatform-library-template](https://github.com/KevinnZou/compose-multiplatform-library-template).
-
-See `LICENSE.txt` in this repository for license details.
-
-
+See `LICENSE.txt`. This project started from the compose-multiplatform-library-template.
