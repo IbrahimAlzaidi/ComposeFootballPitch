@@ -1,7 +1,6 @@
 $dokka.format:html-v1
 $dokka.linkExtension:html
-$dokka.location:////PointingToDeclaration/ComposeFootballPitch/[root]/index.html
-$dokka.location://getPlatformName/#/PointingToDeclaration/ComposeFootballPitch/[root]/get-platform-name.html
+
 module:ComposeFootballPitch
 footballpitch
 footballpitch.model
