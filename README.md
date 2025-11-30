@@ -101,8 +101,5 @@ Useful tasks:
 ./gradlew ktlintCheck
 ```
 
-## Publishing notes 📣
-Gradle coordinates are set to JitPack style: `com.github.IbrahimAlzaidi:ComposeFootballPitch:1.0.0` (matching tag `v1.0.0`). If publishing elsewhere, update the coordinates accordingly.
-
 ## License 📄
 Apache 2.0. See `LICENSE.txt`.
