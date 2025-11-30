@@ -4,7 +4,7 @@ import androidx.compose.ui.geometry.Size
 import footballpitch.model.PitchDimensions
 import footballpitch.model.PitchOrientation
 import footballpitch.model.PitchPosition
-import kotlin.test.Test
+import org.junit.Test
 import kotlin.test.assertEquals
 
 private const val TOLERANCE = 0.001f

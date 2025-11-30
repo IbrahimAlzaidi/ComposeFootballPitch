@@ -1,6 +1,5 @@
-package footballpitch
-
 import androidx.compose.ui.geometry.Size
+import footballpitch.PitchScaleCalculator
 import footballpitch.model.PitchDimensions
 import footballpitch.model.PitchOrientation
 import footballpitch.model.PitchStyle
@@ -8,7 +7,7 @@ import footballpitch.rendering.boundarySpec
 import footballpitch.rendering.effectiveLineWidth
 import footballpitch.rendering.goalBoxSpecs
 import footballpitch.rendering.penaltyBoxSpecs
-import kotlin.test.Test
+import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 

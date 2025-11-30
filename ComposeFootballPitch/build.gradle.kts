@@ -41,12 +41,22 @@ kotlin {
         val commonTest by getting {
             dependencies {
                 implementation(kotlin("test"))
+                implementation("junit:junit:4.13.2")
             }
         }
-        val androidMain by getting {
+
+        val androidMain by getting
+
+        val desktopMain by getting
+
+        // 👇 add this
+        val desktopTest by getting {
             dependencies {
+                implementation(kotlin("test-junit"))
+                implementation("junit:junit:4.13.2")
             }
         }
+
         if (isMacOs) {
             val iosX64Main by getting
             val iosArm64Main by getting
@@ -58,12 +68,9 @@ kotlin {
                 iosSimulatorArm64Main.dependsOn(this)
             }
         }
-        val desktopMain by getting {
-            dependencies {
-            }
-        }
     }
 }
+
 
 android {
     compileSdk = (findProperty("android.compileSdk") as String).toInt()
@@ -83,6 +90,9 @@ android {
     kotlin {
         jvmToolchain(17)
     }
+}
+dependencies {
+    testImplementation("junit:junit:4.12")
 }
 
 mavenPublishing {

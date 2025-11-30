@@ -14,7 +14,7 @@ import footballpitch.model.PitchOrientation
 import footballpitch.model.PitchStyle
 import footballpitch.rendering.drawPitchBackground
 import kotlin.math.roundToInt
-import kotlin.test.Test
+import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue

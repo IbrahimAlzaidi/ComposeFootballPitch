@@ -10,7 +10,7 @@ import footballpitch.model.ShirtStyle
 import footballpitch.model.TeamKitStyle
 import footballpitch.model.TeamLineup
 import footballpitch.rendering.resolvePlayers
-import kotlin.test.Test
+import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
