@@ -28,10 +28,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -66,19 +66,22 @@ fun GroundStyleCard(
     modifier: Modifier = Modifier,
 ) {
     Card(
-        modifier = modifier
-            .fillMaxWidth()
-            // Smoothly animate height changes when Stripes controls appear/disappear
-            .animateContentSize(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
-        ),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                // Smoothly animate height changes when Stripes controls appear/disappear
+                .animateContentSize(),
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+            ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Text(
@@ -106,10 +109,11 @@ fun GroundStyleCard(
                     Column(
                         verticalArrangement = Arrangement.spacedBy(10.dp),
                     ) {
-                        val orientationLabel = when (stripeOrientation) {
-                            StripeOrientation.Vertical -> "Vertical"
-                            StripeOrientation.Horizontal -> "Horizontal"
-                        }
+                        val orientationLabel =
+                            when (stripeOrientation) {
+                                StripeOrientation.Vertical -> "Vertical"
+                                StripeOrientation.Horizontal -> "Horizontal"
+                            }
 
                         BackgroundDropdown(
                             label = "Stripe orientation",
@@ -219,13 +223,14 @@ private fun BackgroundDropdown(
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
-                modifier = Modifier
-                    .clip(RoundedCornerShape(999.dp))
-                    .background(
-                        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
-                    )
-                    .clickable { expanded = true }
-                    .padding(horizontal = 12.dp, vertical = 8.dp),
+                modifier =
+                    Modifier
+                        .clip(RoundedCornerShape(999.dp))
+                        .background(
+                            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f),
+                        )
+                        .clickable { expanded = true }
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
             ) {
                 Text(
                     text = selected,
@@ -342,7 +347,7 @@ private fun StripeCountSlider(
             value = stripeCount.toFloat(),
             onValueChange = { value ->
                 onStripeCountChange(
-                    value.roundToInt().coerceIn(2, 16)
+                    value.roundToInt().coerceIn(2, 16),
                 )
             },
             valueRange = 2f..16f,

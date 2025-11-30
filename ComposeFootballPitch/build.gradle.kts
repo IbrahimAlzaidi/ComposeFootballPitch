@@ -71,7 +71,6 @@ kotlin {
     }
 }
 
-
 android {
     compileSdk = (findProperty("android.compileSdk") as String).toInt()
     namespace = "com.github.ibrahimalzaidi.composefootballpitch"

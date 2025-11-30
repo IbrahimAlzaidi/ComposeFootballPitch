@@ -54,16 +54,19 @@ fun ControlCard(
     onShowAwayTeamChange: (Boolean) -> Unit,
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-        ),
+        modifier =
+            Modifier.fillMaxWidth(),
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+            ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             Row(
@@ -200,19 +203,21 @@ private fun TeamBadge(
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(6.dp),
-            modifier = Modifier
-                .clip(CircleShape)
-                .background(
-                    MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f),
-                )
-                .clickable { onExpandedChange(true) }
-                .padding(horizontal = 10.dp, vertical = 6.dp),
+            modifier =
+                Modifier
+                    .clip(CircleShape)
+                    .background(
+                        MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f),
+                    )
+                    .clickable { onExpandedChange(true) }
+                    .padding(horizontal = 10.dp, vertical = 6.dp),
         ) {
             Box(
-                modifier = Modifier
-                    .size(12.dp)
-                    .clip(CircleShape)
-                    .background(color),
+                modifier =
+                    Modifier
+                        .size(12.dp)
+                        .clip(CircleShape)
+                        .background(color),
             )
 
             Text(
@@ -237,10 +242,11 @@ private fun TeamBadge(
                 DropdownMenuItem(
                     leadingIcon = {
                         Box(
-                            modifier = Modifier
-                                .size(12.dp)
-                                .clip(CircleShape)
-                                .background(swatch),
+                            modifier =
+                                Modifier
+                                    .size(12.dp)
+                                    .clip(CircleShape)
+                                    .background(swatch),
                         )
                     },
                     text = { Text(text = label) },

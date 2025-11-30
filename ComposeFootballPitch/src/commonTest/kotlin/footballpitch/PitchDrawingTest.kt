@@ -1,5 +1,6 @@
+package footballpitch
+
 import androidx.compose.ui.geometry.Size
-import footballpitch.PitchScaleCalculator
 import footballpitch.model.PitchDimensions
 import footballpitch.model.PitchOrientation
 import footballpitch.model.PitchStyle

@@ -53,18 +53,20 @@ fun FormationPicker(
             singleLine = true,
             leadingIcon = {
                 Box(
-                    modifier = Modifier
-                        .size(18.dp)
-                        .clip(CircleShape)
-                        .background(accent),
+                    modifier =
+                        Modifier
+                            .size(18.dp)
+                            .clip(CircleShape)
+                            .background(accent),
                 )
             },
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
             },
-            modifier = Modifier
-                .menuAnchor()
-                .fillMaxWidth(),
+            modifier =
+                Modifier
+                    .menuAnchor()
+                    .fillMaxWidth(),
             textStyle = MaterialTheme.typography.titleMedium,
         )
 

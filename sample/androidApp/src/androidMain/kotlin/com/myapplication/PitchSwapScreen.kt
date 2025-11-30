@@ -65,7 +65,8 @@ fun PitchSwapScreen() {
                 home =
                     TeamSetup(
                         name = "Home",
-                        colorArgb = 0xFF1E88E5, // blue
+                        // blue
+                        colorArgb = 0xFF1E88E5,
                         goalkeeperColorArgb = 0xFFFFC107,
                         formation = Formations.fourFourTwo(),
                         kitStyle =
@@ -77,7 +78,8 @@ fun PitchSwapScreen() {
                 away =
                     TeamSetup(
                         name = "Away",
-                        colorArgb = 0xFFEF5350, // red
+                        // red
+                        colorArgb = 0xFFEF5350,
                         goalkeeperColorArgb = 0xFF8D6E63,
                         formation = Formations.threeFourThree(),
                         kitStyle =
@@ -194,10 +196,11 @@ fun PitchSwapScreen() {
 
     val scrollState = rememberScrollState()
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .verticalScroll(scrollState)
-            .padding(16.dp),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+                .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
     ) {
         Text(text = "Lineup Playground", style = MaterialTheme.typography.headlineSmall)
@@ -315,10 +318,12 @@ private fun PitchPreviewCard(
     awayLineup: footballpitch.model.TeamLineup,
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
-        ),
+        modifier =
+            Modifier.fillMaxWidth(),
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
+            ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
     ) {
         Box(
@@ -329,27 +334,38 @@ private fun PitchPreviewCard(
             contentAlignment = Alignment.Center,
         ) {
             Crossfade(
-                targetState = listOf(
-                    homeStartsOnLeft,
-                    homeFormationKey,
-                    awayFormationKey,
-                    homeColor,
-                    awayColor,
-                    backgroundType,
-                    stripeOrientation,
-                    stripeCount,
-                    solidColor,
-                    gradientStartColor,
-                    gradientEndColor,
-                    checkerLightColor,
-                    checkerDarkColor,
-                ),
+                targetState =
+                    listOf(
+                        homeStartsOnLeft,
+                        homeFormationKey,
+                        awayFormationKey,
+                        homeColor,
+                        awayColor,
+                        backgroundType,
+                        stripeOrientation,
+                        stripeCount,
+                        solidColor,
+                        gradientStartColor,
+                        gradientEndColor,
+                        checkerLightColor,
+                        checkerDarkColor,
+                    ),
                 label = "sideAndFormationSwap",
             ) { _ ->
                 val pitchStyle =
                     when (backgroundType) {
-                        "Stripes" -> PitchStyle(background = PitchBackground.Stripes(stripeCount = stripeCount, orientation = stripeOrientation))
-                        "Solid" -> PitchStyle(background = PitchBackground.Solid(color = solidColor))
+                        "Stripes" ->
+                            PitchStyle(
+                                background =
+                                    PitchBackground.Stripes(
+                                        stripeCount = stripeCount,
+                                        orientation = stripeOrientation,
+                                    ),
+                            )
+                        "Solid" ->
+                            PitchStyle(
+                                background = PitchBackground.Solid(color = solidColor),
+                            )
                         "Checkerboard" ->
                             PitchStyle(
                                 background =
@@ -364,7 +380,10 @@ private fun PitchPreviewCard(
                                         colors = listOf(gradientStartColor, gradientEndColor),
                                     ),
                             )
-                        else -> PitchStyle(background = PitchBackground.Stripes())
+                        else ->
+                            PitchStyle(
+                                background = PitchBackground.Stripes(),
+                            )
                     }
                 FootballPitch(
                     orientation = orientation,
@@ -393,16 +412,19 @@ private fun FormationCard(
     onAwayMenuExpandedChange: (Boolean) -> Unit,
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
-        ),
+        modifier =
+            Modifier.fillMaxWidth(),
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+            ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
         ) {
             Text(
@@ -425,18 +447,20 @@ private fun FormationCard(
                         onHomeFormationChange(it)
                     },
                     accent = homeColor,
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(end = 8.dp),
+                    modifier =
+                        Modifier
+                            .weight(1f)
+                            .padding(end = 8.dp),
                 )
 
                 Box(
-                    modifier = Modifier
-                        .width(1.dp)
-                        .heightIn(min = 40.dp)
-                        .background(
-                            MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f),
-                        ),
+                    modifier =
+                        Modifier
+                            .width(1.dp)
+                            .heightIn(min = 40.dp)
+                            .background(
+                                MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.6f),
+                            ),
                 )
 
                 FormationPicker(
@@ -450,9 +474,10 @@ private fun FormationCard(
                         onAwayFormationChange(it)
                     },
                     accent = awayColor,
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 8.dp),
+                    modifier =
+                        Modifier
+                            .weight(1f)
+                            .padding(start = 8.dp),
                 )
             }
         }

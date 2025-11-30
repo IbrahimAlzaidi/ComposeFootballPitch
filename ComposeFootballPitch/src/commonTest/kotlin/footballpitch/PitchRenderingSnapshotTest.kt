@@ -4,8 +4,8 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.graphics.drawscope.CanvasDrawScope
+import androidx.compose.ui.graphics.toPixelMap
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.LayoutDirection
 import footballpitch.model.PitchBackground
@@ -13,8 +13,8 @@ import footballpitch.model.PitchDimensions
 import footballpitch.model.PitchOrientation
 import footballpitch.model.PitchStyle
 import footballpitch.rendering.drawPitchBackground
-import kotlin.math.roundToInt
 import org.junit.Test
+import kotlin.math.roundToInt
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
@@ -65,8 +65,16 @@ class PitchRenderingSnapshotTest {
         val result = renderPitch(style = style)
         val pixels = result.bitmap.toPixelMap()
 
-        val near = result.scale.pitchOffset(primaryMeters = DEFAULT_DIMENSIONS.penaltyMarkDistance, secondaryMetersFromTop = DEFAULT_DIMENSIONS.width / 2f)
-        val far = result.scale.pitchOffset(primaryMeters = DEFAULT_DIMENSIONS.length - DEFAULT_DIMENSIONS.penaltyMarkDistance, secondaryMetersFromTop = DEFAULT_DIMENSIONS.width / 2f)
+        val near =
+            result.scale.pitchOffset(
+                primaryMeters = DEFAULT_DIMENSIONS.penaltyMarkDistance,
+                secondaryMetersFromTop = DEFAULT_DIMENSIONS.width / 2f,
+            )
+        val far =
+            result.scale.pitchOffset(
+                primaryMeters = DEFAULT_DIMENSIONS.length - DEFAULT_DIMENSIONS.penaltyMarkDistance,
+                secondaryMetersFromTop = DEFAULT_DIMENSIONS.width / 2f,
+            )
 
         val nearColor = pixels[near.x.roundToInt(), near.y.roundToInt()]
         val farColor = pixels[far.x.roundToInt(), far.y.roundToInt()]
@@ -138,7 +146,8 @@ class PitchRenderingSnapshotTest {
     }
 
     private fun renderPitch(
-        size: Size = Size(1050f, 680f), // preserves 105x68 ratio with generous line width
+        // preserves 105x68 ratio with generous line width
+        size: Size = Size(1050f, 680f),
         orientation: PitchOrientation = PitchOrientation.Horizontal,
         style: PitchStyle = PitchStyle(),
     ): RenderResult {
