@@ -93,7 +93,7 @@ object Formations {
  * as needed. [attackDirection] controls whether the team is laid out from
  * left-to-right or mirrored right-to-left.
  *
- * Squad numbers are generated automatically and kept in the 1–11 range so
+ * Squad numbers are generated automatically and kept in the 1-11 range so
  * that callers do not need to provide them manually.
  */
 fun Formation.toPlayers(

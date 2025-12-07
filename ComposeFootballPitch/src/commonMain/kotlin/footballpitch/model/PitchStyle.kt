@@ -2,6 +2,11 @@ package footballpitch.model
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
 
 private val DefaultGrassColors =
     listOf(
@@ -101,4 +106,42 @@ data class PitchStyle(
      * make them thinner. Negative values are clamped to 0f.
      */
     val lineThicknessFactor: Float = 1f,
+    /** Optional custom font family for player jersey numbers. */
+    val playerNumberFontFamily: FontFamily? = null,
+    /**
+     * Optional styling for player names rendered beneath shirts. When null, names are skipped
+     * entirely for better performance and a cleaner tactical view.
+     */
+    val playerNameStyle: PlayerNameStyle? = null,
+)
+
+@Immutable
+data class PlayerNameStyle(
+    /**
+     * Base text style for names; stays fixed for consistency unless caller changes it.
+     * Keep sizes modest to avoid overlap with nearby players.
+     */
+    val textStyle: TextStyle =
+        TextStyle(
+            color = Color.White,
+            fontWeight = FontWeight.SemiBold,
+            textAlign = TextAlign.Center,
+            fontSize = 8.sp,
+        ),
+    /** Outline color behind the text for contrast. */
+    val outlineColor: Color = Color.Black.copy(alpha = 0.6f),
+    /** Maximum width allowed for a name, relative to base icon size. */
+    val maxWidthFactor: Float = 4.6f,
+    /**
+     * Maximum characters to render; longer names are abbreviated to this count without ellipsis
+     * to keep draw calls fast and predictable.
+     */
+    val maxCharacters: Int = 12,
+    /**
+     * Whether to compress given names to initials (e.g., "K. Mbappe") before truncating to [maxCharacters].
+     * Useful for mixed-length squads where you want consistent visual width without per-name tuning.
+     */
+    val useInitialsForGivenNames: Boolean = true,
+    /** Vertical padding (in baseSize multiples) between shirt bottom and name center. */
+    val verticalPaddingFactor: Float = 0.7f,
 )

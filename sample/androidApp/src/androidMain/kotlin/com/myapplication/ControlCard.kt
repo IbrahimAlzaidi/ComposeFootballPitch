@@ -26,11 +26,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import footballpitch.model.ShirtStyle
 
 /**
  * Card that controls attacking direction, visibility of teams, and kit colors.
@@ -44,6 +47,10 @@ fun ControlCard(
     palette: List<Pair<String, Color>>,
     showHomeTeam: Boolean,
     showAwayTeam: Boolean,
+    homeKeeperColor: Color,
+    awayKeeperColor: Color,
+    homeKeeperColorMenu: Boolean,
+    awayKeeperColorMenu: Boolean,
     onHomeColorChange: (Color) -> Unit,
     onAwayColorChange: (Color) -> Unit,
     homeColorMenu: Boolean,
@@ -52,6 +59,14 @@ fun ControlCard(
     onAwayColorMenuChange: (Boolean) -> Unit,
     onShowHomeTeamChange: (Boolean) -> Unit,
     onShowAwayTeamChange: (Boolean) -> Unit,
+    onHomeKeeperColorMenuChange: (Boolean) -> Unit,
+    onAwayKeeperColorMenuChange: (Boolean) -> Unit,
+    onHomeKeeperColorChange: (Color) -> Unit,
+    onAwayKeeperColorChange: (Color) -> Unit,
+    homeShirtStyle: ShirtStyle,
+    awayShirtStyle: ShirtStyle,
+    onHomeShirtStyleChange: (ShirtStyle) -> Unit,
+    onAwayShirtStyleChange: (ShirtStyle) -> Unit,
 ) {
     Card(
         modifier =
@@ -160,31 +175,157 @@ fun ControlCard(
                 }
             }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                TeamBadge(
-                    modifier = Modifier.weight(1f),
-                    name = "Home",
-                    color = homeColor,
-                    palette = palette.filter { it.second != awayColor },
-                    expanded = homeColorMenu,
-                    onExpandedChange = onHomeColorMenuChange,
-                    onColorChange = onHomeColorChange,
-                )
+            ShirtAndColorRow(
+                homeColor = homeColor,
+                awayColor = awayColor,
+                palette = palette,
+                homeColorMenu = homeColorMenu,
+                awayColorMenu = awayColorMenu,
+                onHomeColorMenuChange = onHomeColorMenuChange,
+                onAwayColorMenuChange = onAwayColorMenuChange,
+                onHomeColorChange = onHomeColorChange,
+                onAwayColorChange = onAwayColorChange,
+                homeShirtStyle = homeShirtStyle,
+                awayShirtStyle = awayShirtStyle,
+                onHomeShirtStyleChange = onHomeShirtStyleChange,
+                onAwayShirtStyleChange = onAwayShirtStyleChange,
+            )
 
-                TeamBadge(
-                    modifier = Modifier.weight(1f),
-                    name = "Away",
-                    color = awayColor,
-                    palette = palette.filter { it.second != homeColor },
-                    expanded = awayColorMenu,
-                    onExpandedChange = onAwayColorMenuChange,
-                    onColorChange = onAwayColorChange,
-                )
-            }
+            KeeperColorRow(
+                palette = palette,
+                homeKeeperColor = homeKeeperColor,
+                awayKeeperColor = awayKeeperColor,
+                homeKeeperColorMenu = homeKeeperColorMenu,
+                awayKeeperColorMenu = awayKeeperColorMenu,
+                onHomeKeeperColorMenuChange = onHomeKeeperColorMenuChange,
+                onAwayKeeperColorMenuChange = onAwayKeeperColorMenuChange,
+                onHomeKeeperColorChange = onHomeKeeperColorChange,
+                onAwayKeeperColorChange = onAwayKeeperColorChange,
+            )
+        }
+    }
+}
+
+@Composable
+private fun ShirtAndColorRow(
+    homeColor: Color,
+    awayColor: Color,
+    palette: List<Pair<String, Color>>,
+    homeColorMenu: Boolean,
+    awayColorMenu: Boolean,
+    onHomeColorMenuChange: (Boolean) -> Unit,
+    onAwayColorMenuChange: (Boolean) -> Unit,
+    onHomeColorChange: (Color) -> Unit,
+    onAwayColorChange: (Color) -> Unit,
+    homeShirtStyle: ShirtStyle,
+    awayShirtStyle: ShirtStyle,
+    onHomeShirtStyleChange: (ShirtStyle) -> Unit,
+    onAwayShirtStyleChange: (ShirtStyle) -> Unit,
+) {
+    val styleOptions =
+        listOf(
+            ShirtStyle.CLASSIC to "Classic",
+            ShirtStyle.STRIPED to "Striped",
+            ShirtStyle.COLLAR to "Collar",
+            ShirtStyle.CIRCLE to "Circle marker",
+        )
+
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+        Text(
+            text = "Kits",
+            style = MaterialTheme.typography.titleSmall,
+        )
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            TeamBadge(
+                modifier = Modifier.weight(1f),
+                name = "Home color",
+                color = homeColor,
+                palette = palette.filter { it.second != awayColor },
+                expanded = homeColorMenu,
+                onExpandedChange = onHomeColorMenuChange,
+                onColorChange = onHomeColorChange,
+            )
+
+            TeamBadge(
+                modifier = Modifier.weight(1f),
+                name = "Away color",
+                color = awayColor,
+                palette = palette.filter { it.second != homeColor },
+                expanded = awayColorMenu,
+                onExpandedChange = onAwayColorMenuChange,
+                onColorChange = onAwayColorChange,
+            )
+        }
+
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            ShirtStylePicker(
+                label = "Player shirt (Home)",
+                selected = homeShirtStyle,
+                options = styleOptions,
+                onSelect = onHomeShirtStyleChange,
+                modifier = Modifier.weight(1f),
+            )
+            ShirtStylePicker(
+                label = "Player shirt (Away)",
+                selected = awayShirtStyle,
+                options = styleOptions,
+                onSelect = onAwayShirtStyleChange,
+                modifier = Modifier.weight(1f),
+            )
+        }
+    }
+}
+
+@Composable
+private fun KeeperColorRow(
+    palette: List<Pair<String, Color>>,
+    homeKeeperColor: Color,
+    awayKeeperColor: Color,
+    homeKeeperColorMenu: Boolean,
+    awayKeeperColorMenu: Boolean,
+    onHomeKeeperColorMenuChange: (Boolean) -> Unit,
+    onAwayKeeperColorMenuChange: (Boolean) -> Unit,
+    onHomeKeeperColorChange: (Color) -> Unit,
+    onAwayKeeperColorChange: (Color) -> Unit,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Divider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+        Text(
+            text = "Goalkeeper look",
+            style = MaterialTheme.typography.titleSmall,
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            TeamBadge(
+                modifier = Modifier.weight(1f),
+                name = "Home GK color",
+                color = homeKeeperColor,
+                palette = palette,
+                expanded = homeKeeperColorMenu,
+                onExpandedChange = onHomeKeeperColorMenuChange,
+                onColorChange = onHomeKeeperColorChange,
+            )
+            TeamBadge(
+                modifier = Modifier.weight(1f),
+                name = "Away GK color",
+                color = awayKeeperColor,
+                palette = palette,
+                expanded = awayKeeperColorMenu,
+                onExpandedChange = onAwayKeeperColorMenuChange,
+                onColorChange = onAwayKeeperColorChange,
+            )
         }
     }
 }
@@ -253,6 +394,62 @@ private fun TeamBadge(
                     onClick = {
                         onExpandedChange(false)
                         onColorChange(swatch)
+                    },
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ShirtStylePicker(
+    label: String,
+    selected: ShirtStyle,
+    options: List<Pair<ShirtStyle, String>>,
+    onSelect: (ShirtStyle) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val expanded = remember { mutableStateOf(false) }
+
+    Box(modifier = modifier) {
+        Row(
+            modifier =
+                Modifier
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f))
+                    .clickable { expanded.value = true }
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween,
+        ) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(2.dp),
+                modifier = Modifier.weight(1f),
+            ) {
+                Text(text = label, style = MaterialTheme.typography.labelSmall)
+                Text(
+                    text = options.first { it.first == selected }.second,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+            }
+            Icon(
+                imageVector = Icons.Filled.ArrowDropDown,
+                contentDescription = "Change $label",
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(18.dp),
+            )
+        }
+
+        DropdownMenu(
+            expanded = expanded.value,
+            onDismissRequest = { expanded.value = false },
+        ) {
+            options.forEach { (style, labelText) ->
+                DropdownMenuItem(
+                    text = { Text(labelText) },
+                    onClick = {
+                        expanded.value = false
+                        onSelect(style)
                     },
                 )
             }

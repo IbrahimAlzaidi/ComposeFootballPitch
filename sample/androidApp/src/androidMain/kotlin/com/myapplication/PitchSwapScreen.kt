@@ -38,9 +38,11 @@ import footballpitch.model.MatchTeams
 import footballpitch.model.PitchBackground
 import footballpitch.model.PitchOrientation
 import footballpitch.model.PitchStyle
+import footballpitch.model.PlayerNameStyle
 import footballpitch.model.ShirtStyle
 import footballpitch.model.StripeOrientation
 import footballpitch.model.TeamKitStyle
+import footballpitch.model.TeamLineup
 import footballpitch.model.TeamSetup
 import footballpitch.model.toLineups
 
@@ -103,6 +105,7 @@ fun PitchSwapScreen() {
                 "5-4-1" to Formations.fiveFourOne(),
                 "4-2-4" to Formations.fourTwoFour(),
                 "3-6-1" to Formations.threeSixOne(),
+                "2-3-5" to Formations.twoThreeFive(),
             )
         }
 
@@ -114,6 +117,10 @@ fun PitchSwapScreen() {
     var awayMenuExpanded by remember { mutableStateOf(false) }
     var homeColor by remember { mutableStateOf(Color(0xFF1E88E5)) }
     var awayColor by remember { mutableStateOf(Color(0xFFEF5350)) }
+    var homeKeeperColor by remember { mutableStateOf(Color(0xFFFFC107)) }
+    var awayKeeperColor by remember { mutableStateOf(Color(0xFF8D6E63)) }
+    var homeShirtStyleKey by rememberSaveable { mutableStateOf(ShirtStyle.STRIPED.name) }
+    var awayShirtStyleKey by rememberSaveable { mutableStateOf(ShirtStyle.COLLAR.name) }
     val palette =
         remember {
             listOf(
@@ -149,15 +156,29 @@ fun PitchSwapScreen() {
     var checkerDarkColor by rememberSaveable(stateSaver = colorSaver) { mutableStateOf(grassPalette[1]) }
     var showHomeTeam by rememberSaveable { mutableStateOf(true) }
     var showAwayTeam by rememberSaveable { mutableStateOf(true) }
+    var homeKeeperColorMenu by remember { mutableStateOf(false) }
+    var awayKeeperColorMenu by remember { mutableStateOf(false) }
     val groundOptions = listOf("Stripes", "Checkerboard", "Solid", "Gradient")
 
     // Derived formations
     val homeFormation = formationOptions.first { it.first == homeFormationKey }.second
     val awayFormation = formationOptions.first { it.first == awayFormationKey }.second
+    val homeShirtStyle = ShirtStyle.valueOf(homeShirtStyleKey)
+    val awayShirtStyle = ShirtStyle.valueOf(awayShirtStyleKey)
 
     // Build match view model based on side + formation choices
     val matchForLayout =
-        remember(homeStartsOnLeft, homeFormationKey, awayFormationKey, homeColor, awayColor) {
+        remember(
+            homeStartsOnLeft,
+            homeFormationKey,
+            awayFormationKey,
+            homeColor,
+            awayColor,
+            homeKeeperColor,
+            awayKeeperColor,
+            homeShirtStyleKey,
+            awayShirtStyleKey,
+        ) {
             if (homeStartsOnLeft) {
                 baseTeams.copy(
                     home =
@@ -165,12 +186,24 @@ fun PitchSwapScreen() {
                             attackDirection = AttackDirection.LeftToRight,
                             formation = homeFormation,
                             colorArgb = homeColor.toArgb().toLong(),
+                            goalkeeperColorArgb = homeKeeperColor.toArgb().toLong(),
+                            kitStyle =
+                                TeamKitStyle(
+                                    fieldPlayerShirtStyle = homeShirtStyle,
+                                    goalkeeperShirtStyle = ShirtStyle.GOALKEEPER,
+                                ),
                         ),
                     away =
                         baseTeams.away.copy(
                             attackDirection = AttackDirection.RightToLeft,
                             formation = awayFormation,
                             colorArgb = awayColor.toArgb().toLong(),
+                            goalkeeperColorArgb = awayKeeperColor.toArgb().toLong(),
+                            kitStyle =
+                                TeamKitStyle(
+                                    fieldPlayerShirtStyle = awayShirtStyle,
+                                    goalkeeperShirtStyle = ShirtStyle.GOALKEEPER,
+                                ),
                         ),
                 )
             } else {
@@ -180,18 +213,61 @@ fun PitchSwapScreen() {
                             attackDirection = AttackDirection.LeftToRight,
                             formation = awayFormation,
                             colorArgb = awayColor.toArgb().toLong(),
+                            goalkeeperColorArgb = awayKeeperColor.toArgb().toLong(),
+                            kitStyle =
+                                TeamKitStyle(
+                                    fieldPlayerShirtStyle = awayShirtStyle,
+                                    goalkeeperShirtStyle = ShirtStyle.GOALKEEPER,
+                                ),
                         ),
                     away =
                         baseTeams.home.copy(
                             attackDirection = AttackDirection.RightToLeft,
                             formation = homeFormation,
                             colorArgb = homeColor.toArgb().toLong(),
+                            goalkeeperColorArgb = homeKeeperColor.toArgb().toLong(),
+                            kitStyle =
+                                TeamKitStyle(
+                                    fieldPlayerShirtStyle = homeShirtStyle,
+                                    goalkeeperShirtStyle = ShirtStyle.GOALKEEPER,
+                                ),
                         ),
                 )
             }
         }
 
-    val (homeLineup, awayLineup) = matchForLayout.toLineups()
+    val realMadridNames =
+        listOf(
+            "T. Courtois",
+            "D. Carvajal",
+            "A. Rudiger",
+            "D. Alaba",
+            "F. Mendy",
+            "F. Valverde",
+            "T. Kroos",
+            "J. Bellingham",
+            "Vini Jr.",
+            "K. Mbappe",
+            "Rodrygo",
+        )
+    val barcelonaNames =
+        listOf(
+            "M. ter Stegen",
+            "J. Kounde",
+            "R. Araujo",
+            "A. Christensen",
+            "A. Balde",
+            "I. Gundogan",
+            "F. de Jong",
+            "Pedri",
+            "Raphinha",
+            "L. Yamal",
+            "R. Lewandowski",
+        )
+
+    val (rawHomeLineup, rawAwayLineup) = matchForLayout.toLineups()
+    val homeLineup = rawHomeLineup.withTemplateNames(realMadridNames)
+    val awayLineup = rawAwayLineup.withTemplateNames(barcelonaNames)
     val orientation = PitchOrientation.Horizontal
 
     val scrollState = rememberScrollState()
@@ -253,6 +329,14 @@ fun PitchSwapScreen() {
             palette = palette,
             showHomeTeam = showHomeTeam,
             showAwayTeam = showAwayTeam,
+            homeKeeperColor = homeKeeperColor,
+            awayKeeperColor = awayKeeperColor,
+            homeKeeperColorMenu = homeKeeperColorMenu,
+            awayKeeperColorMenu = awayKeeperColorMenu,
+            onHomeKeeperColorMenuChange = { homeKeeperColorMenu = it },
+            onAwayKeeperColorMenuChange = { awayKeeperColorMenu = it },
+            onHomeKeeperColorChange = { homeKeeperColor = it },
+            onAwayKeeperColorChange = { awayKeeperColor = it },
             onHomeColorChange = {
                 homeColor = it
                 if (awayColor == it) {
@@ -271,6 +355,10 @@ fun PitchSwapScreen() {
             onAwayColorMenuChange = { awayColorMenu = it },
             onShowHomeTeamChange = { showHomeTeam = it },
             onShowAwayTeamChange = { showAwayTeam = it },
+            homeShirtStyle = homeShirtStyle,
+            awayShirtStyle = awayShirtStyle,
+            onHomeShirtStyleChange = { homeShirtStyleKey = it.name },
+            onAwayShirtStyleChange = { awayShirtStyleKey = it.name },
         )
 
         GroundStyleCard(
@@ -314,8 +402,8 @@ private fun PitchPreviewCard(
     orientation: PitchOrientation,
     showHomeTeam: Boolean,
     showAwayTeam: Boolean,
-    homeLineup: footballpitch.model.TeamLineup,
-    awayLineup: footballpitch.model.TeamLineup,
+    homeLineup: TeamLineup,
+    awayLineup: TeamLineup,
 ) {
     Card(
         modifier =
@@ -352,6 +440,7 @@ private fun PitchPreviewCard(
                     ),
                 label = "sideAndFormationSwap",
             ) { _ ->
+                val nameStyle = PlayerNameStyle()
                 val pitchStyle =
                     when (backgroundType) {
                         "Stripes" ->
@@ -361,10 +450,12 @@ private fun PitchPreviewCard(
                                         stripeCount = stripeCount,
                                         orientation = stripeOrientation,
                                     ),
+                                playerNameStyle = nameStyle,
                             )
                         "Solid" ->
                             PitchStyle(
                                 background = PitchBackground.Solid(color = solidColor),
+                                playerNameStyle = nameStyle,
                             )
                         "Checkerboard" ->
                             PitchStyle(
@@ -372,6 +463,7 @@ private fun PitchPreviewCard(
                                     PitchBackground.Checkerboard(
                                         colors = listOf(checkerLightColor, checkerDarkColor),
                                     ),
+                                playerNameStyle = nameStyle,
                             )
                         "Gradient" ->
                             PitchStyle(
@@ -379,10 +471,12 @@ private fun PitchPreviewCard(
                                     PitchBackground.Gradient(
                                         colors = listOf(gradientStartColor, gradientEndColor),
                                     ),
+                                playerNameStyle = nameStyle,
                             )
                         else ->
                             PitchStyle(
                                 background = PitchBackground.Stripes(),
+                                playerNameStyle = nameStyle,
                             )
                     }
                 FootballPitch(
@@ -396,6 +490,18 @@ private fun PitchPreviewCard(
         }
     }
 }
+
+private fun TeamLineup.withTemplateNames(names: List<String>): TeamLineup =
+    copy(
+        players =
+            players.mapIndexed { index, player ->
+                if (!player.name.isNullOrBlank()) {
+                    player
+                } else {
+                    player.copy(name = names.getOrNull(index))
+                }
+            },
+    )
 
 @Composable
 private fun FormationCard(

@@ -13,6 +13,7 @@ import footballpitch.model.PitchDimensions
 import footballpitch.model.PitchOrientation
 import footballpitch.model.PitchStyle
 import footballpitch.rendering.drawPitchBackground
+import org.junit.Ignore
 import org.junit.Test
 import kotlin.math.roundToInt
 import kotlin.test.assertEquals
@@ -37,6 +38,7 @@ private data class RenderResult(
     val scale: PitchScaleCalculator,
 )
 
+@Ignore("Snapshot rendering requires platform graphics; skipping in CI/common tests.")
 class PitchRenderingSnapshotTest {
     @Test
     fun centerSpotIsPainted() {

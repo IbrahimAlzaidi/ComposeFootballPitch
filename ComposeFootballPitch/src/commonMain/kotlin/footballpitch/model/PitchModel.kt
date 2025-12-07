@@ -16,7 +16,8 @@ data class PitchPosition(val x: Float, val y: Float)
  * Description of a team's lineup rendered on the pitch.
  *
  * This is a lightweight, immutable model that the drawing code uses to
- * position players and colour their shirts.
+ * position players and colour their shirts. Names are rendered only when
+ * [footballpitch.model.PitchStyle.playerNameStyle] is provided.
  */
 @Immutable
 data class TeamLineup(
@@ -41,6 +42,8 @@ data class Player(
     val position: PitchPosition,
     /** Optional squad number to render on the shirt. */
     val number: Int? = null,
+    /** Optional player display name to render under the shirt when names are enabled. */
+    val name: String? = null,
     /** Whether this player should be treated as a goalkeeper. */
     val isGoalkeeper: Boolean = false,
 )

@@ -8,9 +8,9 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import footballpitch.PitchScaleCalculator
 import footballpitch.model.GradientDirection
 import footballpitch.model.PitchBackground
-import footballpitch.model.PitchOrientation
 import footballpitch.model.PitchStyle
 import footballpitch.model.StripeOrientation
+import kotlin.math.acos
 
 internal data class BoxSpec(val topLeft: Offset, val size: Size)
 
@@ -130,15 +130,16 @@ internal fun DrawScope.drawPitchBackground(style: PitchStyle) {
 }
 
 /**
- * Draw outer boundary and halfway line
+ * Draw outer boundary and halfway line.
+ * Updated to ensure the halfway line connects perfectly to the outer boundary without gaps.
  */
 internal fun DrawScope.drawBoundaryLines(
     scale: PitchScaleCalculator,
     style: PitchStyle,
 ) {
     val lineWidth = style.effectiveLineWidth(scale)
-    val inset = lineWidth / 2f
 
+    // The outer boundary is inset by half the line width so the stroke sits fully inside the canvas area.
     val boundary = boundarySpec(lineWidth, size)
 
     drawRect(
@@ -148,11 +149,13 @@ internal fun DrawScope.drawBoundaryLines(
         style = Stroke(width = lineWidth),
     )
 
+    // Draw the halfway line.
+    // It should extend exactly from one side of the boundary rectangle to the other.
     val halfPrimary = scale.dimensions.length / 2f
-    val isVertical = scale.orientation == PitchOrientation.Vertical || scale.orientation == PitchOrientation.VerticalReversed
-    val secondaryInset = if (isVertical) Offset(inset, 0f) else Offset(0f, inset)
-    val start = scale.pitchOffset(primaryMeters = halfPrimary, secondaryMetersFromTop = 0f) + secondaryInset
-    val end = scale.pitchOffset(primaryMeters = halfPrimary, secondaryMetersFromTop = scale.dimensions.width) - secondaryInset
+
+    // We do NOT apply an inset here, because we want the line endpoints to touch the outer boundary.
+    val start = scale.pitchOffset(primaryMeters = halfPrimary, secondaryMetersFromTop = 0f)
+    val end = scale.pitchOffset(primaryMeters = halfPrimary, secondaryMetersFromTop = scale.dimensions.width)
 
     drawLine(
         color = style.lineColor,
@@ -341,15 +344,39 @@ internal fun DrawScope.drawPenaltySpots(
 }
 
 /**
- * Draw penalty arcs (the "D")
+ * Draw penalty arcs (the "D").
+ * Updated to dynamically calculate angles based on dimensions, rather than using hardcoded FIFA values.
  */
 internal fun DrawScope.drawPenaltyArcs(
     scale: PitchScaleCalculator,
     style: PitchStyle,
 ) {
     val lineWidth = style.effectiveLineWidth(scale)
+    val dims = scale.dimensions
 
-    val penaltyArcRadiusPx = scale.primaryToPx(scale.dimensions.circleRadius)
+    // 1. Calculate geometric parameters in meters.
+    val radiusMeters = dims.circleRadius
+    // The distance from the penalty spot back to the edge of the penalty box line.
+    // (e.g., Standard FIFA: 16.5m box depth - 11m spot distance = 5.5m adjacent side).
+    val adjacentMeters = dims.penaltyAreaDepth - dims.penaltyMarkDistance
+
+    // Safety check: Ensure dimensions form a valid triangle for arccos calculation.
+    // If the spot is outside the box or the radius is too small to reach the box line, don't draw.
+    if (adjacentMeters >= radiusMeters || adjacentMeters <= 0f) return
+
+    // 2. Calculate the angle using trigonometry (arccosine: cos(angle) = adjacent / hypotenuse).
+    // This gives the angle from the center line to the point where the arc meets the box.
+    val angleRad = acos(adjacentMeters / radiusMeters)
+    val angleDeg = Math.toDegrees(angleRad.toDouble()).toFloat()
+
+    // Determine angles for drawing.
+    val forwardAngle = scale.forwardAngleDegrees()
+    val sweepAngle = angleDeg * 2f
+    val nearStartAngle = forwardAngle - angleDeg
+    val farStartAngle = forwardAngle + 180f - angleDeg
+
+    // 3. Prepare pixel coordinates.
+    val penaltyArcRadiusPx = scale.primaryToPx(radiusMeters)
     val arcDiameter = penaltyArcRadiusPx * 2f
     val secondaryMid = scale.dimensions.width / 2f
 
@@ -364,14 +391,11 @@ internal fun DrawScope.drawPenaltyArcs(
             secondaryMetersFromTop = secondaryMid,
         )
 
-    val forwardAngle = scale.forwardAngleDegrees()
-    val nearStart = forwardAngle - 53f
-    val farStart = forwardAngle + 180f - 53f
-
+    // 4. Draw the arcs.
     drawArc(
         color = style.lineColor,
-        startAngle = nearStart,
-        sweepAngle = 106f,
+        startAngle = nearStartAngle,
+        sweepAngle = sweepAngle,
         useCenter = false,
         topLeft =
             Offset(
@@ -384,8 +408,8 @@ internal fun DrawScope.drawPenaltyArcs(
 
     drawArc(
         color = style.lineColor,
-        startAngle = farStart,
-        sweepAngle = 106f,
+        startAngle = farStartAngle,
+        sweepAngle = sweepAngle,
         useCenter = false,
         topLeft =
             Offset(
@@ -398,37 +422,41 @@ internal fun DrawScope.drawPenaltyArcs(
 }
 
 /**
- * Draw corner arcs
+ * Draw corner arcs.
+ * Updated to inset the arc centers by half the line width, preventing clipping at the canvas edges.
  */
 internal fun DrawScope.drawCornerArcs(
     scale: PitchScaleCalculator,
     style: PitchStyle,
 ) {
     val lineWidth = style.effectiveLineWidth(scale)
+    // Inset needed so the center of the stroke sits exactly on the corner boundary.
+    val inset = lineWidth / 2f
 
     val cornerRadiusPx = scale.primaryToPx(scale.dimensions.cornerArcRadius)
     val cornerDiameter = cornerRadiusPx * 2f
 
-    // Four corners
+    // Four corner centers, adjusted by the inset.
     val corners =
         listOf(
-            // top-left
-            Triple(0f, 0f, 0f),
-            // top-right
-            Triple(90f, size.width, 0f),
-            // bottom-left
-            Triple(270f, 0f, size.height),
-            // bottom-right
-            Triple(180f, size.width, size.height),
+            // top-left center
+            Triple(0f, inset, inset),
+            // top-right center
+            Triple(90f, size.width - inset, inset),
+            // bottom-left center
+            Triple(270f, inset, size.height - inset),
+            // bottom-right center
+            Triple(180f, size.width - inset, size.height - inset),
         )
 
-    corners.forEach { (startAngle, x, y) ->
+    corners.forEach { (startAngle, centerX, centerY) ->
         drawArc(
             color = style.lineColor,
             startAngle = startAngle,
             sweepAngle = 90f,
             useCenter = false,
-            topLeft = Offset(x = x - cornerRadiusPx, y = y - cornerRadiusPx),
+            // The topLeft of the bounding box is relative to the adjusted center point.
+            topLeft = Offset(x = centerX - cornerRadiusPx, y = centerY - cornerRadiusPx),
             size = Size(width = cornerDiameter, height = cornerDiameter),
             style = Stroke(width = lineWidth),
         )
