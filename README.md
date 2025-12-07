@@ -25,30 +25,49 @@ A Compose Multiplatform library for rendering customizable football (soccer) pit
 
 ## Preview
 
-An overview of the features and customization options available in the library.
-
-<table align="center">
+<table>
   <tr>
     <td align="center">
-      <img src="readme_images/what_you_can_change.png" width="400px;" alt=""/>
-      <br /><b>Customization Overview</b>
+      <img src="readme_images/player_shape_classic.png" width="420" alt="Player shape classic"/><br/>
+      <sub><b>Player shape – classic</b></sub>
     </td>
     <td align="center">
-      <img src="readme_images/Pitch_General.png" width="400px;" alt=""/>
-      <br /><b>General Pitch View</b>
+      <img src="readme_images/Pitch_General.png" width="420" alt="Pitch general overview"/><br/>
+      <sub><b>Pitch – general overview</b></sub>
     </td>
   </tr>
   <tr>
     <td align="center">
-      <img src="readme_images/supported_formations.png" width="400px;" alt=""/>
-      <br /><b>Formations</b>
+      <img src="readme_images/ground_styling.png" width="420" alt="Ground styling options"/><br/>
+      <sub><b>Ground styling</b></sub>
     </td>
     <td align="center">
-      <img src="readme_images/player_shapes_2.png" width="400px;" alt=""/>
-      <br /><b>Player Styles</b>
+      <img src="readme_images/what_you_can_change.png" width="420" alt="What you can change on the pitch"/><br/>
+      <sub><b>What you can change</b></sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="readme_images/player_shapes_on_pitch.png" width="420" alt="Player shapes on pitch"/><br/>
+      <sub><b>Player shapes on pitch</b></sub>
+    </td>
+    <td align="center">
+      <img src="readme_images/player_shapes_2.png" width="420" alt="Player shapes set"/><br/>
+      <sub><b>Player shapes set</b></sub>
+    </td>
+  </tr>
+  <tr>
+    <td align="center">
+      <img src="readme_images/supported_formations.png" width="420" alt="Supported formations"/><br/>
+      <sub><b>Supported formations</b></sub>
+    </td>
+    <td align="center">
+      <img src="readme_images/one_team.png" width="420" alt="Single team layout"/><br/>
+      <sub><b>Single team layout</b></sub>
     </td>
   </tr>
 </table>
+
 
 ## Features
 - **Pitch rendering**: FIFA-like proportions, configurable line color/thickness, four orientations (horizontal/vertical, plus reversed).
