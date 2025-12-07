@@ -24,15 +24,69 @@ A Compose Multiplatform library for rendering customizable football (soccer) pit
 - [License](#license)
 
 ## Preview
-![Football pitch preview](FootballPitch.png)
-![Pitch general](readme_images/Pitch_General.png)
-![Ground styling](readme_images/ground_styling.png)
-![What you can change](readme_images/what_you_can_change.png)
-![Player shapes on pitch](readme_images/player_shapes_on_pitch.png)
-![Player shape classic](readme_images/player_shape_classic.png)
-![Player shapes set](readme_images/player_shapes_2.png)
-![Supported formations](readme_images/supported_formations.png)
-![Single team layout](readme_images/one_team.png)
+
+Design beautiful, functional football pitches in Jetpack Compose with extensive customization.
+
+<p align="center">
+  <img src="readme_images/what_you_can_change.png" width="80%" alt="Overview of customization options">
+</p>
+
+---
+
+### 🎨 Player Customization
+
+Choose from classic styles or modern kits, and customize colors and numbers.
+
+<table align="center">
+  <tr>
+    <td align="center" width="50%">
+        <img src="readme_images/player_shape_classic.png" alt="Classic Shirt Style" style="max-width:100%;">
+        <br><b>Classic & Retro Styles</b>
+    </td>
+    <td align="center" width="50%">
+        <img src="readme_images/player_shapes_2.png" alt="Modern Kit Styles" style="max-width:100%;">
+        <br><b>Modern V-Necks & Long Sleeves</b>
+    </td>
+  </tr>
+</table>
+
+### 🏟️ Pitch & Ground Styling
+
+Control the environment, from grass patterns to boundary line thickness.
+
+<table align="center">
+  <tr>
+    <td align="center" width="50%">
+        <img src="readme_images/ground_styling.png" alt="Grass Patterns" style="max-width:100%;">
+        <br><b>Grass Patterns & Colors</b>
+    </td>
+    <td align="center" width="50%">
+        <img src="readme_images/Pitch_General.png" alt="Full Pitch View" style="max-width:100%;">
+        <br><b>Clean Rendering</b>
+    </td>
+  </tr>
+</table>
+
+### 📋 Formations & Layouts
+
+Easily handle full team lineups, single team views, or tactical snapshots.
+
+<table align="center">
+  <tr>
+    <td align="center" width="33%">
+        <img src="readme_images/supported_formations.png" alt="Formations" style="max-width:100%;">
+        <br><b>Standard Formations</b>
+    </td>
+    <td align="center" width="33%">
+        <img src="readme_images/one_team.png" alt="Single Team View" style="max-width:100%;">
+        <br><b>Single Team Focus</b>
+    </td>
+    <td align="center" width="33%">
+        <img src="readme_images/player_shapes_on_pitch.png" alt="Tactical View" style="max-width:100%;">
+        <br><b>Tactical Views</b>
+    </td>
+  </tr>
+</table>
 
 ## Features
 - **Pitch rendering**: FIFA-like proportions, configurable line color/thickness, four orientations (horizontal/vertical, plus reversed).
