@@ -58,10 +58,6 @@ A Compose Multiplatform library for rendering customizable football (soccer) pit
   </tr>
   <tr>
     <td align="center">
-      <img src="readme_images/supported_formations.png" width="420" alt="Supported formations"/><br/>
-      <sub><b>Supported formations</b></sub>
-    </td>
-    <td align="center">
       <img src="readme_images/one_team.png" width="420" alt="Single team layout"/><br/>
       <sub><b>Single team layout</b></sub>
     </td>
