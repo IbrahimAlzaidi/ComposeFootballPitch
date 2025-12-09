@@ -49,7 +49,6 @@ kotlin {
 
         val desktopMain by getting
 
-        // 👇 add this
         val desktopTest by getting {
             dependencies {
                 implementation(kotlin("test-junit"))
