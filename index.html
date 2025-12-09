@@ -2,86 +2,188 @@
 <html class="no-js">
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
-    <title>All modules</title>
+    <title>ComposeFootballPitch – Documentation</title>
     <link href="images/logo-icon.svg" rel="icon" type="image/svg">
     <script>var pathToRoot = "";</script>
-    <script>document.documentElement.classList.replace("no-js","js");</script>
-    <script>const storage = localStorage.getItem("dokka-dark-mode")
-    if (storage == null) {
-        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
-        if (osDarkSchemePreferred === true) {
-            document.getElementsByTagName("html")[0].classList.add("theme-dark")
-        }
-    } else {
-        const savedDarkMode = JSON.parse(storage)
-        if(savedDarkMode === true) {
-            document.getElementsByTagName("html")[0].classList.add("theme-dark")
-        }
-    }
+    <script>
+        document.documentElement.classList.replace("no-js","js");
     </script>
-<script type="text/javascript" src="scripts/sourceset_dependencies.js" async="async"></script>
-<link href="styles/style.css" rel="Stylesheet">
-<link href="styles/main.css" rel="Stylesheet">
-<link href="styles/prism.css" rel="Stylesheet">
-<link href="styles/logo-styles.css" rel="Stylesheet">
-<link href="styles/font-jb-sans-auto.css" rel="Stylesheet">
-<script type="text/javascript" src="scripts/clipboard.js" async="async"></script>
-<script type="text/javascript" src="scripts/navigation-loader.js" async="async"></script>
-<script type="text/javascript" src="scripts/platform-content-handler.js" async="async"></script>
-<script type="text/javascript" src="scripts/main.js" defer="defer"></script>
-<script type="text/javascript" src="scripts/prism.js" async="async"></script>
-<script type="text/javascript" src="scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
+    <script>
+        const storage = localStorage.getItem("dokka-dark-mode")
+        if (storage == null) {
+            const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+            if (osDarkSchemePreferred === true) {
+                document.getElementsByTagName("html")[0].classList.add("theme-dark")
+            }
+        } else {
+            const savedDarkMode = JSON.parse(storage)
+            if(savedDarkMode === true) {
+                document.getElementsByTagName("html")[0].classList.add("theme-dark")
+            }
+        }
+    </script>
+    <script type="text/javascript" src="scripts/sourceset_dependencies.js" async="async"></script>
+    <link href="styles/style.css" rel="Stylesheet">
+    <link href="styles/main.css" rel="Stylesheet">
+    <link href="styles/prism.css" rel="Stylesheet">
+    <link href="styles/logo-styles.css" rel="Stylesheet">
+    <link href="styles/font-jb-sans-auto.css" rel="Stylesheet">
+    <script type="text/javascript" src="scripts/clipboard.js" async="async"></script>
+    <script type="text/javascript" src="scripts/navigation-loader.js" async="async"></script>
+    <script type="text/javascript" src="scripts/platform-content-handler.js" async="async"></script>
+    <script type="text/javascript" src="scripts/main.js" defer="defer"></script>
+    <script type="text/javascript" src="scripts/prism.js" async="async"></script>
+    <script type="text/javascript" src="scripts/symbol-parameters-wrapper_deferred.js" defer="defer"></script>
 </head>
 <body>
-    <div class="root">
-<nav class="navigation" id="navigation-wrapper">
-    <div class="navigation--inner">
-        <div class="navigation-title">
-            <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
-            <div class="library-name">
+<div class="root">
+    <nav class="navigation" id="navigation-wrapper">
+        <div class="navigation--inner">
+            <div class="navigation-title">
+                <button class="menu-toggle" id="menu-toggle" type="button">toggle menu</button>
+                <div class="library-name">
                     <a class="library-name--link" href="index.html">
-                            ComposeFootballPitch
+                        ComposeFootballPitch
                     </a>
-            </div>
-            <div class="library-version">
-            </div>
-        </div>
-    </div>
-    <div class="navigation-controls">
-        <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
-        <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
-    </div>
-</nav>
-        <div id="container">
-            <div class="sidebar" id="leftColumn">
-                <div class="sidebar--inner" id="sideMenu"></div>
-            </div>
-            <div id="main">
-<div class="main-content" id="content" pageIds="ComposeFootballPitch::.ext/allModules///PointingToDeclaration//0">
-  <div class="breadcrumbs"></div>
-  <div class="cover ">
-    <h2 class="">All modules:</h2>
-    <div class="table"><a data-name="-1098967052%2FMain%2F0" anchor-label="ComposeFootballPitch" id="-1098967052%2FMain%2F0" data-filterable-set=""></a>
-      <div class="table-row">
-        <div class="main-subrow ">
-          <div class="w-100"><span class="inline-flex">
-              <div><a href="ComposeFootballPitch/index.html">ComposeFootballPitch</a></div>
-<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1098967052%2FMain%2F0"></span>
-                <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
-              </span></span></div>
-          <div><span class="brief-comment"></span></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-      <div class="footer">
-        <span class="go-to-top-icon"><a href="#content" id="go-to-top-link"></a></span><span>© 2025 Copyright</span><span
-                class="pull-right"><span>Generated by </span><a
-                href="https://github.com/Kotlin/dokka"><span>dokka</span><span class="padded-icon"></span></a></span>
-      </div>
+                </div>
+                <div class="library-version">
+                    <!-- You can inject a version string here manually if you like -->
+                </div>
             </div>
         </div>
-    </div>
+        <div class="navigation-controls">
+            <button class="navigation-controls--btn navigation-controls--theme" id="theme-toggle-button" type="button">switch theme</button>
+            <div class="navigation-controls--btn navigation-controls--search" id="searchBar" role="button">search in API</div>
+        </div>
+    </nav>
+    <div id="container">
+        <div class="sidebar" id="leftColumn">
+            <div class="sidebar--inner" id="sideMenu"></div>
+        </div>
+        <div id="main">
+            <div class="main-content" id="content" pageIds="ComposeFootballPitch::.ext/allModules///PointingToDeclaration//0">
+                <div class="breadcrumbs"></div>
+
+                <!-- Hero / Landing section -->
+                <div class="cover">
+                    <h1>ComposeFootballPitch</h1>
+                    <p class="lead">
+                        A Compose Multiplatform library for rendering customizable football pitches and team lineups
+                        on Android and Desktop (iOS via KMP source).
+                    </p>
+
+                    <p class="mt-2">
+                        Designed for sports apps, live score dashboards, analysis tools, and anyone who wants a
+                        FIFA-style football pitch powered by Jetpack Compose / Compose Multiplatform.
+                    </p>
+
+                    <div class="mt-3">
+                        <a class="btn btn-primary" href="https://github.com/IbrahimAlzaidi/ComposeFootballPitch" target="_blank" rel="noopener">
+                            View on GitHub
+                        </a>
+                        <a class="btn btn-secondary" href="ComposeFootballPitch/index.html">
+                            API Reference
+                        </a>
+                    </div>
+
+                    <div class="mt-2">
+                        <small>
+                            Kotlin · Compose Multiplatform · Android · Desktop · Canvas · Open Source
+                        </small>
+                    </div>
+                </div>
+
+                <!-- Quick feature bullets (uses Dokka table styling for consistency) -->
+                <div class="cover">
+                    <h2>Highlights</h2>
+                    <div class="table">
+                        <div class="table-row">
+                            <div class="main-subrow">
+                                <div class="w-100">
+                                    <strong>FIFA-like pitch proportions &amp; orientations</strong>
+                                </div>
+                                <div>
+                                    <span class="brief-comment">
+                                        Horizontal, vertical, and reversed orientations with realistic field dimensions.
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="main-subrow">
+                                <div class="w-100">
+                                    <strong>Configurable styles &amp; lineups</strong>
+                                </div>
+                                <div>
+                                    <span class="brief-comment">
+                                        Customize grass styles, line thickness, colors, and render home/away teams and formations
+                                        from your own models.
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-row">
+                            <div class="main-subrow">
+                                <div class="w-100">
+                                    <strong>Compose Multiplatform friendly</strong>
+                                </div>
+                                <div>
+                                    <span class="brief-comment">
+                                        Shared rendering logic in common source sets, with ready-to-use Android &amp; Desktop targets.
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Original Dokka "All modules" section (kept intact) -->
+                <div class="cover">
+                    <h2 class="">All modules:</h2>
+                    <div class="table">
+                        <a data-name="-1098967052%2FMain%2F0" anchor-label="ComposeFootballPitch"
+                           id="-1098967052%2FMain%2F0" data-filterable-set=""></a>
+                        <div class="table-row">
+                            <div class="main-subrow ">
+                                <div class="w-100">
+                                    <span class="inline-flex">
+                                        <div>
+                                            <a href="ComposeFootballPitch/index.html">ComposeFootballPitch</a>
+                                        </div>
+                                        <span class="anchor-wrapper">
+                                            <span class="anchor-icon" pointing-to="-1098967052%2FMain%2F0"></span>
+                                            <div class="copy-popup-wrapper ">
+                                                <span class="copy-popup-icon"></span>
+                                                <span>Link copied to clipboard</span>
+                                            </div>
+                                        </span>
+                                    </span>
+                                </div>
+                                <div>
+                                    <span class="brief-comment"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div> <!-- /main-content -->
+
+            <div class="footer">
+                <span class="go-to-top-icon">
+                    <a href="#content" id="go-to-top-link"></a>
+                </span>
+                <span>© 2025 Copyright</span>
+                <span class="pull-right">
+                    <span>Generated by </span>
+                    <a href="https://github.com/Kotlin/dokka">
+                        <span>dokka</span>
+                        <span class="padded-icon"></span>
+                    </a>
+                </span>
+            </div>
+        </div> <!-- /main -->
+    </div> <!-- /container -->
+</div> <!-- /root -->
 </body>
 </html>
